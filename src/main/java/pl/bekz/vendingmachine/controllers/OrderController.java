@@ -1,7 +1,8 @@
-package pl.bekz.vendingmachine;
+package pl.bekz.vendingmachine.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import pl.bekz.vendingmachine.services.OrderService;
 
 @Controller
 public class OrderController {
@@ -12,6 +13,5 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @RequestMapping("/buy")
 
 }

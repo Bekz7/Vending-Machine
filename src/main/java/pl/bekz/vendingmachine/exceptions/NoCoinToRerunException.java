@@ -1,4 +1,4 @@
-package pl.bekz.vendingmachine;
+package pl.bekz.vendingmachine.exceptions;
 
 public class NoCoinToRerunException extends RuntimeException {
 
