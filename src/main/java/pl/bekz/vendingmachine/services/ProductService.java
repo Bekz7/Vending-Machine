@@ -34,7 +34,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public Product refilLProductOnly(Long id, Product productToRefill){
+    public Product refillLProductOnly(Long id, Product productToRefill){
         Product product = findProductById(id);
         product.setAmount(productToRefill.getAmount());
 
