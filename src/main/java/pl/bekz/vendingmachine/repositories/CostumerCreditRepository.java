@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 @Repository
 public interface CostumerCreditRepository {
 
+
   BigDecimal getCostumerCredits();
 
   void addCredit(Money money);
