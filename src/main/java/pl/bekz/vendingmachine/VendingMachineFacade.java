@@ -1,52 +1,58 @@
 package pl.bekz.vendingmachine;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import pl.bekz.vendingmachine.exceptions.ExactChangeOnly;
 import pl.bekz.vendingmachine.exceptions.NotEnoughCoins;
 import pl.bekz.vendingmachine.exceptions.ProductNotFound;
 import pl.bekz.vendingmachine.exceptions.ProductSoldOut;
 import pl.bekz.vendingmachine.model.Money;
 import pl.bekz.vendingmachine.model.Product;
-import pl.bekz.vendingmachine.repositories.CostumerCreditRepository;
+import pl.bekz.vendingmachine.repositories.CostumerBalanceDAO;
 import pl.bekz.vendingmachine.repositories.MachineCreditRepository;
 import pl.bekz.vendingmachine.repositories.ProductRepository;
 
 import java.math.BigDecimal;
 
-
+@Component
 public class VendingMachineFacade {
 
   private ProductRepository productRepository;
   private MachineCreditRepository machineCreditRepository;
-  private CostumerCreditRepository costumerCreditRepository;
+  private CostumerBalanceDAO costumerBalanceDAO;
 
   @Autowired
   public VendingMachineFacade(
-      ProductRepository productRepository,
-      MachineCreditRepository machineCreditRepository,
-      CostumerCreditRepository costumerCreditRepository) {
+          ProductRepository productRepository,
+          MachineCreditRepository machineCreditRepository,
+          CostumerBalanceDAO costumerBalanceDAO) {
     this.productRepository = productRepository;
     this.machineCreditRepository = machineCreditRepository;
-    this.costumerCreditRepository = costumerCreditRepository;
+    this.costumerBalanceDAO = costumerBalanceDAO;
   }
 
-  void insertCoin(Money money) {
-    costumerCreditRepository.addCredit(money);
+  public void insertCoin(Money money) {
+    costumerBalanceDAO.addCoin(money);
   }
 
-  private void buyProduct(Long productId, Money money) {
+  public void buyProduct(Long productId, Money money) {
     Product product = selectProduct(productId);
 
     exactChangeOnly(money);
     if (!productSoldOut(product) && !notEnoughMoney(money, product)) {
-      machineCreditRepository.saveCredits(money.getValue());
+      saveCreditsInMachine(money);
       product.setAmount(product.getAmount() - 1);
-      BigDecimal change = (costumerCreditRepository.getCostumerCredits()).subtract(product.getPrice());
 
       if (!exactChangeOnly(money)){
-        costumerCreditRepository.returnCredits(change);
+        returnMoneyToCostumerAfterBuying(product.getPrice());
       }
     }
+  }
+
+  private Product selectProduct(Long id) {
+    return productRepository
+            .findById(id)
+            .orElseThrow(() -> new ProductNotFound("Can' find product by id: " + id));
   }
 
   private boolean productSoldOut(Product product) {
@@ -63,13 +69,7 @@ public class VendingMachineFacade {
     return false;
   }
 
-  private Product selectProduct(Long id) {
-    return productRepository
-        .findById(id)
-        .orElseThrow(() -> new ProductNotFound("Can' find product by id: " + id));
-  }
-
-  private void refilProduct(Long id, Integer amount) {
+  public void refillProduct(Long id, Integer amount) {
     Product product = selectProduct(id);
     product.setAmount(amount);
     productRepository.save(product);
@@ -81,8 +81,28 @@ public class VendingMachineFacade {
 
   private boolean exactChangeOnly(Money money) {
     if ((machineCreditRepository.getMachineCredits()).compareTo(money.getValue()) < 0){
-      throw new ExactChangeOnly("exact change only");
+      throw new ExactChangeOnly("Exact change only");
     }
     return false;
+  }
+
+  private void returnMoneyToCostumerAfterBuying(BigDecimal productCost){
+    costumerBalanceDAO.updateCoinsBalance(productCost);
+  }
+
+  public void returnCoin(){
+    costumerBalanceDAO.updateCoinsBalance(BigDecimal.valueOf(0));
+  }
+
+  public void getCostumerBalance(){
+    costumerBalanceDAO.getBalance();
+  }
+
+  public void checkMachineCoinBalance(){
+    machineCreditRepository.findFirstByOrderByPublicationDateDesc();
+  }
+
+  public void getAllCoinsFromMachine(){
+    machineCreditRepository.d
   }
 }

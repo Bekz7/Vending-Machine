@@ -2,6 +2,7 @@ package pl.bekz.vendingmachine.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.bekz.vendingmachine.VendingMachineFacade;
 import pl.bekz.vendingmachine.repositories.MachineCreditRepository;
 
 import java.math.BigDecimal;
@@ -9,20 +10,17 @@ import java.math.BigDecimal;
 @Service
 public class MachineBalanceService {
 
-    private MachineCreditRepository machineCreditRepository;
+    private VendingMachineFacade vendingMachineFacade;
 
-    @Autowired
-    public MachineBalanceService(MachineCreditRepository machineCreditRepository) {
-        this.machineCreditRepository = machineCreditRepository;
+    public MachineBalanceService(VendingMachineFacade vendingMachineFacade) {
+        this.vendingMachineFacade = vendingMachineFacade;
     }
 
-    BigDecimal getMachineCredits(){
-        return machineCreditRepository.getMachineCredits();
+    void checkMachineCoinsBalance(){
+        vendingMachineFacade.checkMachineCoinBalance();
     }
 
-    BigDecimal sevaCredits(BigDecimal credits){
-        return machineCreditRepository.saveCredits(credits);
+    void getAllCoinsFromMachine(){
+        vendingMachineFacade
     }
-
-
 }

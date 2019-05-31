@@ -13,4 +13,7 @@ public interface MachineCreditRepository extends JpaRepository<MachineBalance, L
 
     BigDecimal saveCredits(BigDecimal newCredits);
 
+    //Todo check this in Spring data module
+    void findFirstByOrderByPublicationDateDesc();
+
 }
