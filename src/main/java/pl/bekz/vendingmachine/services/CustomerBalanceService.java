@@ -4,28 +4,30 @@ import org.springframework.stereotype.Service;
 import pl.bekz.vendingmachine.VendingMachineFacade;
 import pl.bekz.vendingmachine.model.Money;
 
+import java.math.BigDecimal;
+
 @Service
-public class CostumerBalanceService {
+public class CustomerBalanceService {
 
     private VendingMachineFacade vendingMachineFacade;
 
-    public CostumerBalanceService(VendingMachineFacade vendingMachineFacade) {
+    public CustomerBalanceService(VendingMachineFacade vendingMachineFacade) {
         this.vendingMachineFacade = vendingMachineFacade;
     }
 
-    void getCostumerBalance(){
-        vendingMachineFacade.getCostumerBalance();
+    public BigDecimal getCostumerBalance(){
+        return vendingMachineFacade.getCostumerBalance();
     }
 
-    void addCredits(Money money){
+    public void insertCoin(Money money){
        vendingMachineFacade.insertCoin(money);
     }
 
-    void retunCoins(){
+    public void returnCoins(){
         vendingMachineFacade.returnCoin();
     }
 
-    void buyProduct(Long productId, Money money ){
-        vendingMachineFacade.buyProduct(productId, money);
+    public void buyProduct(Long productId){
+        vendingMachineFacade.buyProduct(productId);
     }
 }

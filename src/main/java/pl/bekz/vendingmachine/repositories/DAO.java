@@ -8,7 +8,7 @@ public interface DAO {
 
     BigDecimal getBalance();
 
-    void addCoin(Money money);
+    void insertCoin(Money money);
 
     void updateCoinsBalance(BigDecimal productCost);
 }

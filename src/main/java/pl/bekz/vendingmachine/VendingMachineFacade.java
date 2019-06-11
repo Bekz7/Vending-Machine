@@ -6,9 +6,10 @@ import pl.bekz.vendingmachine.exceptions.ExactChangeOnly;
 import pl.bekz.vendingmachine.exceptions.NotEnoughCoins;
 import pl.bekz.vendingmachine.exceptions.ProductNotFound;
 import pl.bekz.vendingmachine.exceptions.ProductSoldOut;
+import pl.bekz.vendingmachine.model.MachineBalance;
 import pl.bekz.vendingmachine.model.Money;
 import pl.bekz.vendingmachine.model.Product;
-import pl.bekz.vendingmachine.repositories.CostumerBalanceDAO;
+import pl.bekz.vendingmachine.repositories.CustomerBalanceDAO;
 import pl.bekz.vendingmachine.repositories.MachineCreditRepository;
 import pl.bekz.vendingmachine.repositories.ProductRepository;
 
@@ -19,31 +20,31 @@ public class VendingMachineFacade {
 
   private ProductRepository productRepository;
   private MachineCreditRepository machineCreditRepository;
-  private CostumerBalanceDAO costumerBalanceDAO;
+  private CustomerBalanceDAO customerBalanceDAO;
 
   @Autowired
   public VendingMachineFacade(
-          ProductRepository productRepository,
-          MachineCreditRepository machineCreditRepository,
-          CostumerBalanceDAO costumerBalanceDAO) {
+      ProductRepository productRepository,
+      MachineCreditRepository machineCreditRepository,
+      CustomerBalanceDAO customerBalanceDAO) {
     this.productRepository = productRepository;
     this.machineCreditRepository = machineCreditRepository;
-    this.costumerBalanceDAO = costumerBalanceDAO;
+    this.customerBalanceDAO = customerBalanceDAO;
   }
 
   public void insertCoin(Money money) {
-    costumerBalanceDAO.addCoin(money);
+    customerBalanceDAO.insertCoin(money);
   }
 
-  public void buyProduct(Long productId, Money money) {
-    Product product = selectProduct(productId);
+  public void buyProduct(Long productId) {
+    final Product product = selectProduct(productId);
+    exactChangeOnly(product);
 
-    exactChangeOnly(money);
-    if (!productSoldOut(product) && !notEnoughMoney(money, product)) {
-      saveCreditsInMachine(money);
+    if (!productSoldOut(product) && !notEnoughMoney(product)) {
+      saveCreditsInMachine(product);
       product.setAmount(product.getAmount() - 1);
 
-      if (!exactChangeOnly(money)){
+      if (!exactChangeOnly(product)) {
         returnMoneyToCostumerAfterBuying(product.getPrice());
       }
     }
@@ -51,8 +52,8 @@ public class VendingMachineFacade {
 
   private Product selectProduct(Long id) {
     return productRepository
-            .findById(id)
-            .orElseThrow(() -> new ProductNotFound("Can' find product by id: " + id));
+        .findById(id)
+        .orElseThrow(() -> new ProductNotFound("Can' find product by id: " + id));
   }
 
   private boolean productSoldOut(Product product) {
@@ -62,8 +63,8 @@ public class VendingMachineFacade {
     return false;
   }
 
-  private boolean notEnoughMoney(Money money, Product product) {
-    if ((money.getValue()).compareTo(product.getPrice()) < 0) {
+  private boolean notEnoughMoney(Product product) {
+    if ((getCostumerBalance()).compareTo(product.getPrice()) < 0) {
       throw new NotEnoughCoins("You don't have enough money to buy selected product");
     }
     return false;
@@ -75,34 +76,39 @@ public class VendingMachineFacade {
     productRepository.save(product);
   }
 
-  private void saveCreditsInMachine(Money money) {
-    machineCreditRepository.saveCredits(money.getValue());
+  private void saveCreditsInMachine(Product product) {
+    final BigDecimal productPrice = product.getPrice();
+    final MachineBalance machineBalance =
+        machineCreditRepository
+            .findTopByOrderByIdDesc();
+
+    machineBalance.setMachineBalance(productPrice);
   }
 
-  private boolean exactChangeOnly(Money money) {
-    if ((machineCreditRepository.getMachineCredits()).compareTo(money.getValue()) < 0){
+  private boolean exactChangeOnly(Product product) {
+    if ((checkMachineCoinBalance()).compareTo(product.getPrice()) < 0) {
       throw new ExactChangeOnly("Exact change only");
     }
     return false;
   }
 
-  private void returnMoneyToCostumerAfterBuying(BigDecimal productCost){
-    costumerBalanceDAO.updateCoinsBalance(productCost);
+  private void returnMoneyToCostumerAfterBuying(BigDecimal productCost) {
+    customerBalanceDAO.updateCoinsBalance(productCost);
   }
 
-  public void returnCoin(){
-    costumerBalanceDAO.updateCoinsBalance(BigDecimal.valueOf(0));
+  public void returnCoin() {
+    customerBalanceDAO.updateCoinsBalance(BigDecimal.valueOf(0));
   }
 
-  public void getCostumerBalance(){
-    costumerBalanceDAO.getBalance();
+  public BigDecimal getCostumerBalance() {
+    return customerBalanceDAO.getBalance();
   }
 
-  public void checkMachineCoinBalance(){
-    machineCreditRepository.findFirstByOrderByPublicationDateDesc();
+  public BigDecimal checkMachineCoinBalance() {
+    return machineCreditRepository.findTopByOrderByIdDesc().getMachineBalance();
   }
 
-  public void getAllCoinsFromMachine(){
-    machineCreditRepository.d
+  public void getAllCoinsFromMachine() {
+    machineCreditRepository.deleteAll();
   }
 }
