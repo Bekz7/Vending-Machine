@@ -1,21 +1,27 @@
 package pl.bekz.vendingmachine.model;
 
 import lombok.*;
+import pl.bekz.vendingmachine.model.dto.ProductDto;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
-@Table(name = "product")
-@Data
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Product {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
   private String name;
   private Integer amount;
-  private BigDecimal price;
+  private Money price;
+
+  public ProductDto productDto(){
+    return ProductDto.builder()
+            .name(name)
+            .amount(amount)
+            .price(price.getValue())
+            .build();
+  }
 
 }

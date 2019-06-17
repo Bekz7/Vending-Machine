@@ -1,8 +1,23 @@
 package pl.bekz.vendingmachine.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.Repository;
+import pl.bekz.vendingmachine.exceptions.ProductNotFound;
 import pl.bekz.vendingmachine.model.Product;
 
-@Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {}
+public interface ProductRepository extends Repository<Product, String> {
+
+    Product addNewProduct(String name);
+    Product refill(String name);
+    Product findById(String name);
+    Page<Product> findAll(Pageable pageable);
+
+    default Product findOneOrThrow(String name){
+        Product product = findById(name);
+        if (product == null){
+            throw new ProductNotFound(name);
+        }
+        return product;
+    }
+}
