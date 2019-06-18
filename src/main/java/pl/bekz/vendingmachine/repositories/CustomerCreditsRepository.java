@@ -1,13 +1,14 @@
 package pl.bekz.vendingmachine.repositories;
 
-import pl.bekz.vendingmachine.model.Credits;
 import pl.bekz.vendingmachine.model.Money;
+
+import java.math.BigDecimal;
 
 public interface CustomerCreditsRepository {
 
-    Credits insertCoin(Money coin);
+    Integer insertCoin(Money coin);
 
-    Credits checkCoinsBalance(Money coins);
+    BigDecimal checkCoinsBalance();
 
-    Credits returnCoins(Money money);
+    void returnCoins(Money money);
 }

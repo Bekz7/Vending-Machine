@@ -1,27 +1,45 @@
 package pl.bekz.vendingmachine.repositories;
 
-import pl.bekz.vendingmachine.model.Credits;
+import lombok.Getter;
 import pl.bekz.vendingmachine.model.Money;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.Enumeration;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryCustomerCreditsRepository implements CustomerCreditsRepository {
 
-    private List<Credits> customerCredits = new ArrayList<>();
+  @Getter private ConcurrentHashMap<Money, Integer> customerCredits = new ConcurrentHashMap<>();
+  private int coinsNumber;
 
-    @Override
-    public Credits insertCoin(Money coin) {
-        return null;
+  @Override
+  public Integer insertCoin(Money coin) {
+    if (hasCoin(coin)) {
+      coinsNumber += customerCredits.get(coin);
+    }else{
+        coinsNumber = 1;
     }
+    customerCredits.put(coin, coinsNumber);
+    return coinsNumber;
+  }
 
-    @Override
-    public Credits checkCoinsBalance(Money coins) {
-        return null;
-    }
+  @Override
+  public BigDecimal checkCoinsBalance() {
+    Enumeration<Money> coins = customerCredits.keys();
+    BigDecimal balance = coins.nextElement().getValue();
 
-    @Override
-    public Credits returnCoins(Money o) {
-        return null;
+    for (int i = 0; i <= customerCredits.size(); i++) {
+      //          balance = balance * customerCredits.get(customerCredits.values());
     }
+    return balance;
+  }
+
+  @Override
+  public void returnCoins(Money coins) {
+    customerCredits.clear();
+  }
+
+  private boolean hasCoin(Money coin) {
+    return customerCredits.containsKey(coin);
+  }
 }
