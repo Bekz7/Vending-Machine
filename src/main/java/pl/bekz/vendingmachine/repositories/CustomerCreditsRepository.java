@@ -10,5 +10,5 @@ public interface CustomerCreditsRepository {
 
     BigDecimal checkCoinsBalance();
 
-    void returnCoins(Money money);
+    void returnCoins();
 }

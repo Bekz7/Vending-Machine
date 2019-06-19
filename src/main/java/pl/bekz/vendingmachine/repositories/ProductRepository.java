@@ -4,11 +4,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.Repository;
 import pl.bekz.vendingmachine.exceptions.ProductNotFound;
+import pl.bekz.vendingmachine.model.Money;
 import pl.bekz.vendingmachine.model.Product;
 
 public interface ProductRepository extends Repository<Product, String> {
 
-    Product addNewProduct(String name);
+    Product addNewProduct(String name, int amount, Money price);
     Product refill(String name);
     Product findById(String name);
     Page<Product> findAll(Pageable pageable);

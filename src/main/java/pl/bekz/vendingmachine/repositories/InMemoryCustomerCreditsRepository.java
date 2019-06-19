@@ -8,8 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryCustomerCreditsRepository implements CustomerCreditsRepository {
 
-  @Getter public ConcurrentHashMap<Money, Integer> customerCredits = new ConcurrentHashMap<>();
-  public BigDecimal balance = BigDecimal.ZERO;
+  @Getter
+  private ConcurrentHashMap<Money, Integer> customerCredits = new ConcurrentHashMap<>();
+  private BigDecimal balance;
 
   @Override
   public Integer insertCoin(Money coin) {
@@ -25,12 +26,13 @@ public class InMemoryCustomerCreditsRepository implements CustomerCreditsReposit
 
   @Override
   public BigDecimal checkCoinsBalance() {
-    customerCredits.forEach((money, v) -> balance = money.getValue().multiply(BigDecimal.valueOf(v)));
+    balance = BigDecimal.ZERO;
+    customerCredits.forEach((money, v) -> balance = balance.add(money.getValue().multiply(BigDecimal.valueOf(v))));
     return balance;
   }
 
   @Override
-  public void returnCoins(Money coins) {
+  public void returnCoins() {
     customerCredits.clear();
   }
 
