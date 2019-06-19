@@ -11,15 +11,23 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
         InMemoryCustomerCreditsRepository creditsRepository = new InMemoryCustomerCreditsRepository()
         when:
         creditsRepository.insertCoin(Money.DOLLAR)
-        creditsRepository.insertCoin(Money.DOLLAR)
-        creditsRepository.insertCoin(Money.DOLLAR)
-        creditsRepository.insertCoin(Money.DOLLAR)
         then:
-        println (creditsRepository.getCustomerCredits().size())
-        creditsRepository.getCustomerCredits().size() > 0
+        creditsRepository.getCustomerCredits().get(Money.DOLLAR) == 1
     }
 
     def "CheckCoinsBalance"() {
+        given:
+        InMemoryCustomerCreditsRepository creditsRepository = new InMemoryCustomerCreditsRepository()
+        creditsRepository.customerCredits.put(Money.QUARTER, 3)
+        creditsRepository.checkCoinsBalance()
+        println (creditsRepository.balance)
+        creditsRepository.customerCredits.put(Money.DOLLAR, 3)
+        creditsRepository.checkCoinsBalance()
+        println (creditsRepository.balance)
+        expect:
+        println (creditsRepository.checkCoinsBalance())
+        println (creditsRepository.checkCoinsBalance())
+        creditsRepository.checkCoinsBalance()
     }
 
     def "ReturnCoins"() {
