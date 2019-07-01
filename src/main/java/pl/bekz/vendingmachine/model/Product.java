@@ -20,7 +20,7 @@ public class Product {
     return ProductDto.builder()
             .name(name)
             .amount(amount)
-            .price(price.getValue())
+            .price(price)
             .build();
   }
 

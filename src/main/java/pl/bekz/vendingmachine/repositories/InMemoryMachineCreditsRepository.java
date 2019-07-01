@@ -18,8 +18,7 @@ public class InMemoryMachineCreditsRepository implements MachineCreditsRepositor
 
   @Override
   public Integer updateCoinsBalance(Money coin, int coinsNumber) {
-      machineCredits.put(coin, coinsNumber);
-    return null;
+      return  machineCredits.replace(coin, coinsNumber);
   }
 
   @Override
