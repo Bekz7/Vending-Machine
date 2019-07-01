@@ -9,7 +9,7 @@ import pl.bekz.vendingmachine.model.Product;
 
 public interface ProductRepository extends Repository<Product, String> {
 
-    Product addNewProduct(String name, int amount, Money price);
+    Product addNewProduct(Product product);
     Product refill(String name);
     Product findById(String name);
     Page<Product> findAll(Pageable pageable);

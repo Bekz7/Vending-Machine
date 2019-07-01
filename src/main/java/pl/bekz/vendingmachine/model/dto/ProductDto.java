@@ -1,6 +1,7 @@
 package pl.bekz.vendingmachine.model.dto;
 
 import lombok.*;
+import pl.bekz.vendingmachine.model.Money;
 
 import java.math.BigDecimal;
 
@@ -11,6 +12,6 @@ public class ProductDto {
 
   private String name;
   private Integer amount;
-  private BigDecimal price;
+  private Money price;
 
 }

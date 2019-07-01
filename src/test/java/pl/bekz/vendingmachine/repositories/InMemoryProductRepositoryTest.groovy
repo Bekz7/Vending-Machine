@@ -2,6 +2,7 @@ package pl.bekz.vendingmachine.repositories
 
 import pl.bekz.vendingmachine.model.Money
 import pl.bekz.vendingmachine.model.Product
+import pl.bekz.vendingmachine.model.dto.ProductDto
 import spock.lang.Specification
 
 import java.util.concurrent.ConcurrentHashMap
@@ -18,9 +19,9 @@ class InMemoryProductRepositoryTest extends Specification {
         final String cocaCola = "Coca Cola"
         final int amount = 1
         final Money price = Money.DOLLAR
+        ProductDto cola = new ProductDto(cocaCola, amount, price.value)
         when:
-        productRepository.addNewProduct(cocaCola, amount, price)
-        final ConcurrentHashMap<String, Product> testProduct
+        productRepository.addNewProduct(cola)
         then:
         println productRepository.findById(cocaCola)
     }

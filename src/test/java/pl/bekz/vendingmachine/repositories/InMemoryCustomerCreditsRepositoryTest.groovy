@@ -25,7 +25,7 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
         given: "As Customer putting money"
         creditsRepository.customerCredits.put(Money.QUARTER, 4)
         when: "When We trying return ours money"
-        creditsRepository.returnCoins()
+        creditsRepository.clearCoinsBalance()
         then: "We want theirs return"
         creditsRepository.customerCredits.size() == 0
     }
