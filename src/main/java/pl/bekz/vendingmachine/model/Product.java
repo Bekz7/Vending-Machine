@@ -1,9 +1,13 @@
 package pl.bekz.vendingmachine.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import pl.bekz.vendingmachine.model.dto.ProductDto;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.math.BigDecimal;
 
 @Entity
 @Builder
@@ -14,7 +18,7 @@ public class Product {
   @Id
   private String name;
   private Integer amount;
-  private Money price;
+  private BigDecimal price;
 
   public ProductDto productDto(){
     return ProductDto.builder()

@@ -32,6 +32,17 @@ public class InMemoryCustomerCreditsRepository implements CustomerCreditsReposit
   }
 
   @Override
+  public void updateCredits(BigDecimal value) {
+    balance = value;
+
+  }
+
+  private void creditMapper(BigDecimal credits){
+//    if (credits.divide(Money.DOLLAR.getValue()))
+
+  }
+
+  @Override
   public void clearCoinsBalance() {
     customerCredits.clear();
   }

@@ -3,6 +3,8 @@ package pl.bekz.vendingmachine.repositories
 import pl.bekz.vendingmachine.model.Money
 import spock.lang.Specification
 
+import java.math.RoundingMode
+
 class InMemoryCustomerCreditsRepositoryTest extends Specification {
 
     private InMemoryCustomerCreditsRepository creditsRepository = new InMemoryCustomerCreditsRepository()
@@ -31,5 +33,12 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
     }
     void cleanup() {
         creditsRepository = null
+    }
+//TODO tests rounding method for BigDecimal mapper
+    def"checkIfDivide"(){
+        given:
+        BigDecimal a = 2.5
+        BigDecimal b = a.divide(BigDecimal.ONE, RoundingMode.DOWN)
+        println(b)
     }
 }
