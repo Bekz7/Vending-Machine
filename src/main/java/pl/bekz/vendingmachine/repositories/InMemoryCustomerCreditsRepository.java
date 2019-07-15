@@ -4,6 +4,7 @@ import lombok.Getter;
 import pl.bekz.vendingmachine.model.Money;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryCustomerCreditsRepository implements CustomerCreditsRepository {
@@ -36,10 +37,56 @@ public class InMemoryCustomerCreditsRepository implements CustomerCreditsReposit
     balance = value;
 
   }
+//TODO Refactor this method
+  public void creditMapper(BigDecimal credits){
 
-  private void creditMapper(BigDecimal credits){
-//    if (credits.divide(Money.DOLLAR.getValue()))
+    BigDecimal dollars = countCoins(credits, Money.DOLLAR.getValue());
+    if (isContain(dollars)){
+      customerCredits.put(Money.DOLLAR, dollars.intValue());
+      credits = credits.subtract(dollars);
+    }
 
+    BigDecimal quarters = countCoins(credits, Money.QUARTER.getValue());
+    if (isContain(quarters)){
+      customerCredits.put(Money.QUARTER, quarters.intValue());
+      credits = credits.subtract(quarters.multiply(Money.QUARTER.getValue()));
+    }
+
+    BigDecimal dimes = countCoins(credits, Money.DIME.getValue());
+    if (isContain(dimes)){
+      customerCredits.put(Money.DIME, dimes.intValue());
+      credits = credits.subtract(dimes.multiply(Money.DIME.getValue()));
+    }
+
+    BigDecimal nickels = countCoins(credits, Money.NICKEL.getValue());
+    if (isContain(nickels)){
+      customerCredits.put(Money.NICKEL, nickels.intValue());
+      credits = credits.subtract(nickels.multiply(Money.NICKEL.getValue()));
+    }
+
+    if (credits.compareTo(BigDecimal.ZERO) >0 ){
+      System.out.println("Something went wrong in mapping " + credits);
+    }
+
+
+  }
+
+  private BigDecimal countDenomination (BigDecimal credits, Money coin){
+
+    BigDecimal denomination = countCoins(credits, coin.getValue());
+    if (isContain(denomination)){
+      customerCredits.put(coin, denomination.intValue());
+      credits = credits.subtract(denomination);
+    }
+    return credits;
+  }
+
+  private BigDecimal countCoins (BigDecimal credits, BigDecimal coins){
+    return credits.divide(coins, 0, RoundingMode.DOWN);
+  }
+
+  private boolean isContain (BigDecimal credits){
+    return credits.compareTo(BigDecimal.ZERO) > 0;
   }
 
   @Override

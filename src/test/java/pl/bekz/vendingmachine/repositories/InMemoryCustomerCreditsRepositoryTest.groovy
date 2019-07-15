@@ -11,9 +11,9 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
 
     def "InsertCoin"() {
         given: "As a Customer I want to insert a coin"
-            creditsRepository.insertCoin(Money.DOLLAR)
+        creditsRepository.insertCoin(Money.DOLLAR)
         expect: "As result We have a dollar"
-            creditsRepository.getCustomerCredits().get(Money.DOLLAR) == 1
+        creditsRepository.getCustomerCredits().get(Money.DOLLAR) == 1
     }
 
     def "CheckCoinsBalance"() {
@@ -31,14 +31,18 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
         then: "We want theirs return"
         creditsRepository.customerCredits.size() == 0
     }
+
     void cleanup() {
         creditsRepository = null
     }
-//TODO tests rounding method for BigDecimal mapper
-    def"checkIfDivide"(){
+
+    def "checkIfDivide"() {
         given:
-        BigDecimal a = 2.5
-        BigDecimal b = a.divide(BigDecimal.ONE, RoundingMode.DOWN)
-        println(b)
+        println (creditsRepository.getCustomerCredits())
+        BigDecimal credit = 2.90
+        when:
+        creditsRepository.creditMapper(credit)
+        then:
+        println (creditsRepository.getCustomerCredits())
     }
 }
