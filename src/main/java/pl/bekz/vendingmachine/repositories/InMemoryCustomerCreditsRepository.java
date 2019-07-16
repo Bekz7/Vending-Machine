@@ -39,26 +39,33 @@ public class InMemoryCustomerCreditsRepository implements CustomerCreditsReposit
   }
 //TODO Refactor this method
   public void creditMapper(BigDecimal credits){
+    customerCredits.put(Money.DOLLAR, 0);
+    customerCredits.put(Money.QUARTER, 0);
+    customerCredits.put(Money.DIME, 0);
+    customerCredits.put(Money.NICKEL, 0);
 
-    BigDecimal dollars = countCoins(credits, Money.DOLLAR.getValue());
+    for (ConcurrentHashMap.Entry<Money, Integer> coins : customerCredits.entrySet()){
+
+    }
+    BigDecimal dollars = countCoinsAccordingDenomination(credits, Money.DOLLAR.getValue());
     if (isContain(dollars)){
       customerCredits.put(Money.DOLLAR, dollars.intValue());
       credits = credits.subtract(dollars);
     }
 
-    BigDecimal quarters = countCoins(credits, Money.QUARTER.getValue());
+    BigDecimal quarters = countCoinsAccordingDenomination(credits, Money.QUARTER.getValue());
     if (isContain(quarters)){
       customerCredits.put(Money.QUARTER, quarters.intValue());
       credits = credits.subtract(quarters.multiply(Money.QUARTER.getValue()));
     }
 
-    BigDecimal dimes = countCoins(credits, Money.DIME.getValue());
+    BigDecimal dimes = countCoinsAccordingDenomination(credits, Money.DIME.getValue());
     if (isContain(dimes)){
       customerCredits.put(Money.DIME, dimes.intValue());
       credits = credits.subtract(dimes.multiply(Money.DIME.getValue()));
     }
 
-    BigDecimal nickels = countCoins(credits, Money.NICKEL.getValue());
+    BigDecimal nickels = countCoinsAccordingDenomination(credits, Money.NICKEL.getValue());
     if (isContain(nickels)){
       customerCredits.put(Money.NICKEL, nickels.intValue());
       credits = credits.subtract(nickels.multiply(Money.NICKEL.getValue()));
@@ -73,7 +80,7 @@ public class InMemoryCustomerCreditsRepository implements CustomerCreditsReposit
 
   private BigDecimal countDenomination (BigDecimal credits, Money coin){
 
-    BigDecimal denomination = countCoins(credits, coin.getValue());
+    BigDecimal denomination = countCoinsAccordingDenomination(credits, coin.getValue());
     if (isContain(denomination)){
       customerCredits.put(coin, denomination.intValue());
       credits = credits.subtract(denomination);
@@ -81,7 +88,7 @@ public class InMemoryCustomerCreditsRepository implements CustomerCreditsReposit
     return credits;
   }
 
-  private BigDecimal countCoins (BigDecimal credits, BigDecimal coins){
+  private BigDecimal countCoinsAccordingDenomination(BigDecimal credits, BigDecimal coins){
     return credits.divide(coins, 0, RoundingMode.DOWN);
   }
 
