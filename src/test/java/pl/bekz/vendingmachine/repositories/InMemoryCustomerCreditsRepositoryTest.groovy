@@ -4,6 +4,7 @@ import pl.bekz.vendingmachine.model.Money
 import spock.lang.Specification
 
 import java.math.RoundingMode
+import java.util.concurrent.ConcurrentHashMap
 
 class InMemoryCustomerCreditsRepositoryTest extends Specification {
 
@@ -36,13 +37,23 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
         creditsRepository = null
     }
 
-    def "checkIfDivide"() {
-        given:
-        println (creditsRepository.getCustomerCredits())
-        BigDecimal credit = 2.90
-        when:
-        creditsRepository.creditMapper(credit)
-        then:
-        println (creditsRepository.getCustomerCredits())
+    def "checkIfCorrectMapping"() {
+        given: "Some credits added"
+        BigDecimal credits = 2.90
+        when: "We want map ours credits to coins"
+        creditsRepository.creditMapper(credits)
+        then: "Should get map with ours coins equals to inputted credits"
+
+        creditsRepository.getCustomerCredits() == fulfillCreditsMap()
+    }
+
+    private def fulfillCreditsMap(){
+        ConcurrentHashMap<Money, Integer> result = new ConcurrentHashMap<>()
+        result.put(Money.DOLLAR, 2)
+        result.put(Money.QUARTER, 3)
+        result.put(Money.DIME, 1)
+        result.put(Money.NICKEL, 1)
+
+        return result
     }
 }
