@@ -4,11 +4,12 @@ import pl.bekz.vendingmachine.model.Money;
 
 import java.math.BigDecimal;
 
-public interface MachineCreditsRepository {
+public interface CreditsRepository {
 
-    Integer persistCoins(Money coin, int coinsNumber);
-    Integer updateCoinsBalance(Money coin, int coinsNumber);
+    void updateCoinBalance(Money coin, int coinAmount);
+
     BigDecimal checkCoinsBalance();
+    void persistCoins(BigDecimal credits);
     void clearCoinsBalance();
 
 }

@@ -7,7 +7,7 @@ import pl.bekz.vendingmachine.exceptions.NotEnoughCoins;
 import pl.bekz.vendingmachine.exceptions.ProductSoldOut;
 import pl.bekz.vendingmachine.model.dto.ProductDto;
 import pl.bekz.vendingmachine.repositories.CustomerCreditsRepository;
-import pl.bekz.vendingmachine.repositories.MachineCreditsRepository;
+import pl.bekz.vendingmachine.repositories.CreditsRepository;
 import pl.bekz.vendingmachine.repositories.ProductRepository;
 
 import java.math.BigDecimal;
@@ -18,17 +18,17 @@ import static java.util.Objects.requireNonNull;
 public class ProductFacade {
   ProductCreator productCreator;
   CustomerCreditsRepository customerCreditsRepository;
-  MachineCreditsRepository machineCreditsRepository;
+  CreditsRepository creditsRepository;
   ProductRepository productRepository;
 
   public ProductFacade(
       ProductCreator productCreator,
       CustomerCreditsRepository customerCreditsRepository,
-      MachineCreditsRepository machineCreditsRepository,
+      CreditsRepository creditsRepository,
       ProductRepository productRepository) {
     this.productCreator = productCreator;
     this.customerCreditsRepository = customerCreditsRepository;
-    this.machineCreditsRepository = machineCreditsRepository;
+    this.creditsRepository = creditsRepository;
     this.productRepository = productRepository;
   }
 
@@ -69,7 +69,6 @@ public class ProductFacade {
     customerCreditsRepository.clearCoinsBalance();
   }
 
-  // TODO complete this method
   public void buyProduct(String productId) {
     BigDecimal customerCredit = checkCustomerBalance();
 
@@ -84,6 +83,7 @@ public class ProductFacade {
     }
 
     customerCredit = customerCredit.subtract(product.getPrice());
+    customerCreditsRepository.creditMapper(customerCredit);
 
   }
 

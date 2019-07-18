@@ -7,13 +7,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class InMemoryCustomerCreditsRepository implements CustomerCreditsRepository {
+public class InMemoryCreditsRepository implements CreditsRepository {
 
-  @Getter private ConcurrentHashMap<Money, Integer> customerCredits;
+  @Getter private ConcurrentHashMap<Money, Integer> allCredits;
   private BigDecimal balance;
 
-  public InMemoryCustomerCreditsRepository() {
-    customerCredits = initializeMapWithKeys();
+  public InMemoryCreditsRepository() {
+    allCredits = initializeMapWithKeys();
   }
 
   private ConcurrentHashMap<Money, Integer> initializeMapWithKeys() {
@@ -27,42 +27,30 @@ public class InMemoryCustomerCreditsRepository implements CustomerCreditsReposit
   }
 
   @Override
-  public Integer insertCoin(Money coin) {
-    int coinsNumber = 0;
-
-    if (hasCoin(coin)) {
-      coinsNumber++;
-    } else {
-      coinsNumber = 1;
-    }
-    return customerCredits.put(coin, coinsNumber);
+  public void updateCoinBalance(Money coin, int coinAmount) {
+    allCredits.put(coin, coinAmount);
   }
 
   @Override
   public BigDecimal checkCoinsBalance() {
     balance = BigDecimal.ZERO;
-    customerCredits.forEach(
-            (money, v) -> balance = balance.add(money.getValue().multiply(BigDecimal.valueOf(v))));
+    allCredits.forEach(
+        (money, v) -> balance = balance.add(money.getValue().multiply(BigDecimal.valueOf(v))));
     return balance;
   }
 
   @Override
-  public void updateCredits(BigDecimal value) {
-    balance = value;
-  }
-
-  @Override
-  public void creditMapper(BigDecimal credits) {
-    customerCredits.entrySet().stream()
-            .sorted(ConcurrentHashMap.Entry.comparingByKey())
-            .forEach((money) -> countDenomination(money.getKey(), credits));
+  public void persistCoins(BigDecimal credits) {
+    allCredits.entrySet().stream()
+        .sorted(ConcurrentHashMap.Entry.comparingByKey())
+        .forEach((money) -> countDenomination(money.getKey(), credits));
   }
 
   private void countDenomination(Money coin, BigDecimal credits) {
 
     BigDecimal denomination = roundingCoinsNumbers(credits, coin.getValue());
     if (isContain(denomination)) {
-      customerCredits.put(coin, denomination.intValue());
+      allCredits.put(coin, denomination.intValue());
     }
   }
 
@@ -77,10 +65,6 @@ public class InMemoryCustomerCreditsRepository implements CustomerCreditsReposit
 
   @Override
   public void clearCoinsBalance() {
-    customerCredits.clear();
-  }
-
-  private boolean hasCoin(Money coin) {
-    return customerCredits.containsKey(coin);
+    allCredits.clear();
   }
 }

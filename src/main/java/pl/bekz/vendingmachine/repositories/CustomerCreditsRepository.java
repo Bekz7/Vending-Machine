@@ -10,6 +10,8 @@ public interface CustomerCreditsRepository {
 
     BigDecimal checkCoinsBalance();
 
+    void creditMapper(BigDecimal credits);
+
     void updateCredits(BigDecimal value);
 
     void clearCoinsBalance();

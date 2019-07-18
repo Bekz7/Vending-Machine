@@ -20,7 +20,7 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
     def "CheckCoinsBalance"() {
         given: "As a Customer when We paste money"
         creditsRepository.customerCredits.put(Money.QUARTER, 4)
-        expect: "We want our balance equals to dollar"
+        expect: "We want our allCredits equals to dollar"
         creditsRepository.checkCoinsBalance() == BigDecimal.ONE
     }
 
@@ -38,12 +38,13 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
     }
 
     def "checkIfCorrectMapping"() {
-        given: "Some credits added"
+        given: "Some allCredits added"
         BigDecimal credits = 2.90
-        when: "We want map ours credits to coins"
-        creditsRepository.creditMapper(credits)
-        then: "Should get map with ours coins equals to inputted credits"
 
+        when: "We want map ours allCredits to coins"
+        creditsRepository.creditMapper(credits)
+
+        then: "Should get map with ours coins equals to inputted allCredits"
         creditsRepository.getCustomerCredits() == fulfillCreditsMap()
     }
 
