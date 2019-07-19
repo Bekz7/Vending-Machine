@@ -7,12 +7,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class InMemoryCreditsRepository implements CreditsRepository {
+public class InMemoryCreditsRepositoryImpl implements CreditsRepository {
 
   @Getter private ConcurrentHashMap<Money, Integer> allCredits;
-  private BigDecimal balance;
+  @Getter private BigDecimal balance;
 
-  public InMemoryCreditsRepository() {
+  public InMemoryCreditsRepositoryImpl() {
     allCredits = initializeMapWithKeys();
   }
 

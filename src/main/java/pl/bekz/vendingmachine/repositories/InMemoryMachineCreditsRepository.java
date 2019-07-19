@@ -1,61 +1,26 @@
 package pl.bekz.vendingmachine.repositories;
 
-import lombok.Getter;
 import pl.bekz.vendingmachine.model.Money;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class InMemoryMachineCreditsRepository implements CreditsRepository {
+public class InMemoryMachineCreditsRepository implements MachineCreditsRepository {
 
-  @Getter private ConcurrentHashMap<Money, Integer> machineCredits = new ConcurrentHashMap<>();
-  private BigDecimal balance;
+  private InMemoryCreditsRepositoryImpl creditsRepository = new InMemoryCreditsRepositoryImpl();
 
-  @Override
-  public Integer updateCoinBalance(Money coin, int coinsNumber) {
-    return machineCredits.replace(coin, coinsNumber);
-  }
-
-  @Override
   public void persistCoins(BigDecimal credits) {
-    machineCredits.entrySet().stream()
-        .sorted(ConcurrentHashMap.Entry.comparingByKey())
-        .forEach((money) -> putDenominationCoins(money.getKey(), credits));
+    creditsRepository.persistCoins(credits);
   }
 
-  private void putDenominationCoins(Money coin, BigDecimal credits) {
-
-    BigDecimal denomination = roundingCoinsNumbers(credits, coin.getValue());
-    if (isContain(denomination)) {
-      persistCoinsNumbers(coin, denomination.intValue());
-    }
-  }
-
-  private BigDecimal roundingCoinsNumbers(BigDecimal credits, BigDecimal coins) {
-    BigDecimal creditsLeft = credits.subtract(checkCoinsBalance());
-    return creditsLeft.divide(coins, 0, RoundingMode.DOWN);
-  }
-
-  private boolean isContain(BigDecimal credits) {
-    return credits.compareTo(BigDecimal.ZERO) > 0;
-  }
-
-  private void persistCoinsNumbers(Money coin, int coinsNumber) {
-    machineCredits.put(coin, coinsNumber);
-  }
-
-  @Override
   public BigDecimal checkCoinsBalance() {
-    balance = BigDecimal.ZERO;
-    machineCredits.forEach(
-        ((money, values) ->
-            balance = balance.add(money.getValue().multiply(BigDecimal.valueOf(values)))));
-    return balance;
+    return creditsRepository.checkCoinsBalance();
   }
 
-  @Override
+  public void updateCoinBalance(Money coin, int coinAmount) {
+    creditsRepository.updateCoinBalance(coin, coinAmount);
+  }
+
   public void clearCoinsBalance() {
-    machineCredits.clear();
+    creditsRepository.clearCoinsBalance();
   }
 }

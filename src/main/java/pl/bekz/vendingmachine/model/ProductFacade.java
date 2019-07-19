@@ -56,9 +56,9 @@ public class ProductFacade {
     return productRepository.refill(product.productDto().getName());
   }
 
-  public Integer insertCoin(Money coin) {
+  public void insertCoin(Money coin) {
     requireNonNull(coin);
-    return customerCreditsRepository.insertCoin(coin);
+    customerCreditsRepository.insertCoin(coin);
   }
 
   public BigDecimal checkCustomerBalance() {
@@ -83,7 +83,7 @@ public class ProductFacade {
     }
 
     customerCredit = customerCredit.subtract(product.getPrice());
-    customerCreditsRepository.creditMapper(customerCredit);
+    customerCreditsRepository.persistCoins(customerCredit);
 
   }
 

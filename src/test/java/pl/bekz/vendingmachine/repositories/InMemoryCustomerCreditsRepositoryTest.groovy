@@ -3,7 +3,6 @@ package pl.bekz.vendingmachine.repositories
 import pl.bekz.vendingmachine.model.Money
 import spock.lang.Specification
 
-import java.math.RoundingMode
 import java.util.concurrent.ConcurrentHashMap
 
 class InMemoryCustomerCreditsRepositoryTest extends Specification {
@@ -42,7 +41,7 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
         BigDecimal credits = 2.90
 
         when: "We want map ours allCredits to coins"
-        creditsRepository.creditMapper(credits)
+        creditsRepository.persistCoins(credits)
 
         then: "Should get map with ours coins equals to inputted allCredits"
         creditsRepository.getCustomerCredits() == fulfillCreditsMap()
