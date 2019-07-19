@@ -21,6 +21,7 @@ public class InMemoryCustomerCreditsRepository implements CustomerCreditsReposit
 
   @Override
   public void updateCoinBalance(Money coin, int coinAmount) {
+    creditsRepository.updateCoinBalance(coin, coinAmount);
 
   }
 

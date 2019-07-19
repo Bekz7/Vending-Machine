@@ -3,11 +3,12 @@ package pl.bekz.vendingmachine.model;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+import pl.bekz.vendingmachine.exceptions.ExactChangeOnly;
 import pl.bekz.vendingmachine.exceptions.NotEnoughCoins;
 import pl.bekz.vendingmachine.exceptions.ProductSoldOut;
 import pl.bekz.vendingmachine.model.dto.ProductDto;
 import pl.bekz.vendingmachine.repositories.CustomerCreditsRepository;
-import pl.bekz.vendingmachine.repositories.CreditsRepository;
+import pl.bekz.vendingmachine.repositories.MachineCreditsRepository;
 import pl.bekz.vendingmachine.repositories.ProductRepository;
 
 import java.math.BigDecimal;
@@ -18,17 +19,17 @@ import static java.util.Objects.requireNonNull;
 public class ProductFacade {
   ProductCreator productCreator;
   CustomerCreditsRepository customerCreditsRepository;
-  CreditsRepository creditsRepository;
+  MachineCreditsRepository machineCreditsRepository;
   ProductRepository productRepository;
 
   public ProductFacade(
       ProductCreator productCreator,
       CustomerCreditsRepository customerCreditsRepository,
-      CreditsRepository creditsRepository,
+      MachineCreditsRepository machineCreditsRepository,
       ProductRepository productRepository) {
     this.productCreator = productCreator;
     this.customerCreditsRepository = customerCreditsRepository;
-    this.creditsRepository = creditsRepository;
+    this.machineCreditsRepository = machineCreditsRepository;
     this.productRepository = productRepository;
   }
 
@@ -65,7 +66,7 @@ public class ProductFacade {
     return customerCreditsRepository.checkCoinsBalance();
   }
 
-  public void returnCoins() {
+  public void returnCustomerCoins() {
     customerCreditsRepository.clearCoinsBalance();
   }
 
@@ -82,9 +83,16 @@ public class ProductFacade {
       throw new NotEnoughCoins();
     }
 
+    machineCreditsRepository.persistCoins(product.getPrice());
+
+    if (exactChangeOnly(product)) {
+      machineCreditsRepository.persistCoins(
+          machineCreditsRepository.checkCoinsBalance().subtract(product.getPrice()));
+      throw new ExactChangeOnly();
+    }
+
     customerCredit = customerCredit.subtract(product.getPrice());
     customerCreditsRepository.persistCoins(customerCredit);
-
   }
 
   private boolean haveEnoughCredit(BigDecimal customerCredit, ProductDto product) {
@@ -94,4 +102,21 @@ public class ProductFacade {
   private boolean isProductOnStock(String productId) {
     return show(productId).getAmount() > 0;
   }
+
+  private boolean exactChangeOnly(ProductDto product) {
+    return machineCreditsRepository
+            .checkCoinsBalance()
+            .subtract(customerCreditsRepository.checkCoinsBalance())
+            .intValue()
+        > 0;
+  }
+
+  public void checkMachineCoinBalance(){
+    machineCreditsRepository.checkCoinsBalance();
+  }
+
+  public void WithdrawMachineDeposit(){
+    machineCreditsRepository.clearCoinsBalance();
+  }
+
 }
