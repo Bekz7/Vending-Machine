@@ -3,10 +3,15 @@ package pl.bekz.vendingmachine.repositories;
 import pl.bekz.vendingmachine.model.Money;
 
 import java.math.BigDecimal;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryCustomerCreditsRepository implements CustomerCreditsRepository {
 
   private InMemoryCreditsRepositoryImpl creditsRepository = new InMemoryCreditsRepositoryImpl();
+
+  public ConcurrentHashMap getAllCreditsMap(){
+    return creditsRepository.getAllCredits();
+  }
 
   public void insertCoin(Money coin) {
     int coinsNumber = creditsRepository.getAllCredits().get(coin);
@@ -22,7 +27,6 @@ public class InMemoryCustomerCreditsRepository implements CustomerCreditsReposit
   @Override
   public void updateCoinBalance(Money coin, int coinAmount) {
     creditsRepository.updateCoinBalance(coin, coinAmount);
-
   }
 
   public BigDecimal checkCoinsBalance() {

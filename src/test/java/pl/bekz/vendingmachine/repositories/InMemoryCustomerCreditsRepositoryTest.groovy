@@ -13,23 +13,23 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
         given: "As a Customer I want to insert a coin"
         creditsRepository.insertCoin(Money.DOLLAR)
         expect: "As result We have a dollar"
-        creditsRepository.getCustomerCredits().get(Money.DOLLAR) == 1
+        creditsRepository.checkCoinsBalance() == 1
     }
 
     def "CheckCoinsBalance"() {
         given: "As a Customer when We paste money"
-        creditsRepository.customerCredits.put(Money.QUARTER, 4)
+        creditsRepository.updateCoinBalance(Money.QUARTER, 4)
         expect: "We want our allCredits equals to dollar"
         creditsRepository.checkCoinsBalance() == BigDecimal.ONE
     }
 
     def "ReturnCoins"() {
         given: "As Customer putting money"
-        creditsRepository.customerCredits.put(Money.QUARTER, 4)
+        creditsRepository.updateCoinBalance(Money.QUARTER, 4)
         when: "When We trying return ours money"
         creditsRepository.clearCoinsBalance()
         then: "We want theirs return"
-        creditsRepository.customerCredits.size() == 0
+        creditsRepository.checkCoinsBalance() == 0
     }
 
     void cleanup() {
@@ -44,10 +44,10 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
         creditsRepository.persistCoins(credits)
 
         then: "Should get map with ours coins equals to inputted allCredits"
-        creditsRepository.getCustomerCredits() == fulfillCreditsMap()
+        creditsRepository.getAllCreditsMap() == fulfillCreditsMap()
     }
 
-    private def fulfillCreditsMap(){
+    private static final def fulfillCreditsMap(){
         ConcurrentHashMap<Money, Integer> result = new ConcurrentHashMap<>()
         result.put(Money.DOLLAR, 2)
         result.put(Money.QUARTER, 3)

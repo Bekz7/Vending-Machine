@@ -5,8 +5,6 @@ import pl.bekz.vendingmachine.model.Product
 import pl.bekz.vendingmachine.model.dto.ProductDto
 import spock.lang.Specification
 
-import java.util.concurrent.ConcurrentHashMap
-
 class InMemoryProductRepositoryTest extends Specification {
 
     private InMemoryProductRepository productRepository = new InMemoryProductRepository();

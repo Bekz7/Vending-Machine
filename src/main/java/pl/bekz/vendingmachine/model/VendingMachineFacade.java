@@ -16,13 +16,13 @@ import java.math.BigDecimal;
 import static java.util.Objects.requireNonNull;
 
 @Transactional
-public class ProductFacade {
+public class VendingMachineFacade {
   ProductCreator productCreator;
   CustomerCreditsRepository customerCreditsRepository;
   MachineCreditsRepository machineCreditsRepository;
   ProductRepository productRepository;
 
-  public ProductFacade(
+  public VendingMachineFacade(
       ProductCreator productCreator,
       CustomerCreditsRepository customerCreditsRepository,
       MachineCreditsRepository machineCreditsRepository,
