@@ -1,6 +1,11 @@
 package pl.bekz.vendingmachine.model
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import pl.bekz.vendingmachine.exceptions.ExactChangeOnly
+import pl.bekz.vendingmachine.exceptions.NotEnoughCoins
 import pl.bekz.vendingmachine.exceptions.ProductNotFound
+import pl.bekz.vendingmachine.model.dto.ProductDto
 import spock.lang.Specification
 
 class VendingMachineFacadeTest extends Specification implements SampleProducts {
@@ -26,7 +31,89 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         facade.show("something")
 
         then:
-            thrown(ProductNotFound)
+        thrown(ProductNotFound)
+    }
+
+    def "Should find all products"() {
+        given:
+        facade.add(cocaCola)
+        facade.add(cocoRise)
+        facade.add(pepsi)
+
+        when:
+        Page<ProductDto> foundProduct = facade.findAll(new PageRequest(0, 10))
+
+        then:
+        foundProduct.contains(cocaCola)
+        foundProduct.contains(cocoRise)
+        foundProduct.contains(pepsi)
+    }
+
+    def "Should refill chosen product"(){
+        given:
+        facade.add(cocaCola)
+
+        when:
+        facade.refill(cocaCola.getName())
+
+        then:
+        facade.show(cocaCola.getName()).amount == 3
+    }
+
+    def "As a Customer should insert coin"(){
+        given:
+        facade.insertCoin(Money.DOLLAR)
+
+        expect:
+        facade.checkCustomerBalance() == Money.DOLLAR.value
+    }
+
+    def "As a Customer I want return all my coins" (){
+        given:
+        facade.insertCoin(Money.DOLLAR)
+
+        when:
+        facade.returnCustomerCoins()
+
+        then:
+        facade.checkCustomerBalance() == BigDecimal.ZERO
+    }
+
+    def "After buying product should decrease product amount"(){
+        given:
+        facade.add(cocaCola)
+        facade.insertCoin(Money.DOLLAR)
+        facade.insertCoin(Money.DOLLAR)
+
+        when:
+        facade.buyProduct(cocaCola.getName())
+
+        then:
+        facade.show(cocaCola.getName()).amount < cocaCola.getAmount()
+    }
+
+    def "Should throw not enough coin exception"(){
+        given:
+        facade.add(cocaCola)
+
+        when:
+        facade.buyProduct(cocaCola.getName())
+
+        then:
+        thrown(NotEnoughCoins)
+    }
+
+    def "Machine should inform exact change only"(){
+        given:
+        facade.add(pepsi)
+        facade.insertCoin(Money.DOLLAR)
+        facade.insertCoin(Money.QUARTER)
+
+        when:
+        facade.buyProduct(pepsi.getName())
+
+        then:
+        thrown(ExactChangeOnly)
     }
 
 

@@ -54,7 +54,7 @@ public class VendingMachineFacade {
   public Product refill(String productDto) {
     requireNonNull(productDto);
     Product product = productRepository.findById(productDto);
-    return productRepository.refill(product.productDto().getName());
+    return productRepository.changeProductAmount(product.productDto().getName(), 1);
   }
 
   public void insertCoin(Money coin) {
@@ -83,16 +83,15 @@ public class VendingMachineFacade {
       throw new NotEnoughCoins();
     }
 
-    machineCreditsRepository.persistCoins(product.getPrice());
+    machineCreditsRepository.persistCoins(customerCredit);
 
     if (exactChangeOnly(product)) {
-      machineCreditsRepository.persistCoins(
-          machineCreditsRepository.checkCoinsBalance().subtract(product.getPrice()));
       throw new ExactChangeOnly();
     }
 
     customerCredit = customerCredit.subtract(product.getPrice());
     customerCreditsRepository.persistCoins(customerCredit);
+    decreaseProductAmount(productId);
   }
 
   private boolean haveEnoughCredit(BigDecimal customerCredit, ProductDto product) {
@@ -103,20 +102,25 @@ public class VendingMachineFacade {
     return show(productId).getAmount() > 0;
   }
 
+  //TODO problem with coins
   private boolean exactChangeOnly(ProductDto product) {
     return machineCreditsRepository
             .checkCoinsBalance()
-            .subtract(customerCreditsRepository.checkCoinsBalance())
+            .subtract(product.getPrice())
             .intValue()
-        > 0;
+        < 0 && machineCreditsRepository.;
   }
 
-  public void checkMachineCoinBalance(){
+  private void decreaseProductAmount(String productId){
+    productRepository.changeProductAmount(productId, -1);
+  }
+
+
+  public void checkMachineCoinBalance() {
     machineCreditsRepository.checkCoinsBalance();
   }
 
-  public void WithdrawMachineDeposit(){
+  public void WithdrawMachineDeposit() {
     machineCreditsRepository.clearCoinsBalance();
   }
-
 }

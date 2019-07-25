@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import pl.bekz.vendingmachine.model.Product;
-import pl.bekz.vendingmachine.model.dto.ProductDto;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,10 +23,11 @@ public class InMemoryProductRepository implements ProductRepository {
   }
 
   @Override
-  public Product refill(String name) {
+  public Product changeProductAmount(String name, int amount) {
     Product product = findById(name);
-    final int refill = product.productDto().getAmount() + 1;
-    ProductDto.builder().amount(refill);
+    final int refill = product.productDto().getAmount() + amount;
+    product = Product.builder().amount(refill).build();
+    map.put(name, product);
     return product;
   }
 
