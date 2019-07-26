@@ -9,6 +9,7 @@ public class InMemoryCustomerCreditsRepository implements CustomerCreditsReposit
 
   private InMemoryCreditsRepositoryImpl creditsRepository = new InMemoryCreditsRepositoryImpl();
 
+  @Override
   public ConcurrentHashMap getAllCreditsMap(){
     return creditsRepository.getAllCredits();
   }
@@ -29,8 +30,8 @@ public class InMemoryCustomerCreditsRepository implements CustomerCreditsReposit
     creditsRepository.updateCoinBalance(coin, coinAmount);
   }
 
-  public BigDecimal checkCoinsBalance() {
-    return creditsRepository.checkCoinsBalance();
+  public BigDecimal checkBalance() {
+    return creditsRepository.checkBalance();
   }
 
   public void persistCoins(BigDecimal credits) {

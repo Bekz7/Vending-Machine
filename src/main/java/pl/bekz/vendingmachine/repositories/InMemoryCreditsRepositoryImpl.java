@@ -5,14 +5,19 @@ import pl.bekz.vendingmachine.model.Money;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import static org.springframework.data.util.Pair.toMap;
 
 public class InMemoryCreditsRepositoryImpl implements CreditsRepository {
 
   @Getter private ConcurrentHashMap<Money, Integer> allCredits;
   @Getter private BigDecimal balance;
 
-  public InMemoryCreditsRepositoryImpl() {
+  InMemoryCreditsRepositoryImpl() {
     allCredits = initializeMapWithKeys();
   }
 
@@ -26,13 +31,14 @@ public class InMemoryCreditsRepositoryImpl implements CreditsRepository {
     return result;
   }
 
+//TODO how to put values from one map to other
   @Override
-  public void updateCoinBalance(Money coin, int coinAmount) {
-    allCredits.put(coin, coinAmount);
+  public void updateCoinBalance(ConcurrentHashMap coinMap) {
+
   }
 
   @Override
-  public BigDecimal checkCoinsBalance() {
+  public BigDecimal checkBalance() {
     balance = BigDecimal.ZERO;
     allCredits.forEach(
         (money, v) -> balance = balance.add(money.getValue().multiply(BigDecimal.valueOf(v))));
@@ -55,7 +61,7 @@ public class InMemoryCreditsRepositoryImpl implements CreditsRepository {
   }
 
   private BigDecimal roundingCoinsNumbers(BigDecimal credits, BigDecimal coins) {
-    BigDecimal creditsLeft = credits.subtract(checkCoinsBalance());
+    BigDecimal creditsLeft = credits.subtract(checkBalance());
     return creditsLeft.divide(coins, 0, RoundingMode.DOWN);
   }
 

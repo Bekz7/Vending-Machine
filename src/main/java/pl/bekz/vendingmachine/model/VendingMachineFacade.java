@@ -63,7 +63,7 @@ public class VendingMachineFacade {
   }
 
   public BigDecimal checkCustomerBalance() {
-    return customerCreditsRepository.checkCoinsBalance();
+    return customerCreditsRepository.checkBalance();
   }
 
   public void returnCustomerCoins() {
@@ -71,6 +71,7 @@ public class VendingMachineFacade {
   }
 
   public void buyProduct(String productId) {
+    requireNonNull(productId);
     BigDecimal customerCredit = checkCustomerBalance();
 
     if (!isProductOnStock(productId)) {
@@ -82,7 +83,7 @@ public class VendingMachineFacade {
     if (!haveEnoughCredit(customerCredit, product)) {
       throw new NotEnoughCoins();
     }
-
+    machineCreditsRepository.updateCoinBalance();
     machineCreditsRepository.persistCoins(customerCredit);
 
     if (exactChangeOnly(product)) {
@@ -105,10 +106,10 @@ public class VendingMachineFacade {
   //TODO problem with coins
   private boolean exactChangeOnly(ProductDto product) {
     return machineCreditsRepository
-            .checkCoinsBalance()
+            .checkBalance()
             .subtract(product.getPrice())
             .intValue()
-        < 0 && machineCreditsRepository.;
+        < 0  ;
   }
 
   private void decreaseProductAmount(String productId){
@@ -117,7 +118,7 @@ public class VendingMachineFacade {
 
 
   public void checkMachineCoinBalance() {
-    machineCreditsRepository.checkCoinsBalance();
+    machineCreditsRepository.checkBalance();
   }
 
   public void WithdrawMachineDeposit() {

@@ -13,14 +13,14 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
         given: "As a Customer I want to insert a coin"
         creditsRepository.insertCoin(Money.DOLLAR)
         expect: "As result We have a dollar"
-        creditsRepository.checkCoinsBalance() == 1
+        creditsRepository.checkBalance() == 1
     }
 
     def "CheckCoinsBalance"() {
         given: "As a Customer when We paste money"
         creditsRepository.updateCoinBalance(Money.QUARTER, 4)
         expect: "We want our allCredits equals to dollar"
-        creditsRepository.checkCoinsBalance() == BigDecimal.ONE
+        creditsRepository.checkBalance() == BigDecimal.ONE
     }
 
     def "ReturnCoins"() {
@@ -29,7 +29,7 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
         when: "When We trying return ours money"
         creditsRepository.clearCoinsBalance()
         then: "We want theirs return"
-        creditsRepository.checkCoinsBalance() == 0
+        creditsRepository.checkBalance() == 0
     }
 
     void cleanup() {
