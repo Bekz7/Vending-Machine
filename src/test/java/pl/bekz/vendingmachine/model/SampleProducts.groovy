@@ -6,7 +6,7 @@ import groovy.transform.CompileStatic
 @CompileStatic
 trait SampleProducts {
     ProductDto pepsi = createProductDto("Pepsi", 7, 1.1)
-    ProductDto cocaCola = createProductDto("Coca-cola", 2, BigDecimal.ONE)
+    ProductDto cocaCola = createProductDto("Coca-cola", 2, 1.0)
     ProductDto cocoRise = createProductDto("Coco-rise", 5, BigDecimal.ZERO)
 
     ProductDto createProductDto(String name, Integer amount, BigDecimal price) {

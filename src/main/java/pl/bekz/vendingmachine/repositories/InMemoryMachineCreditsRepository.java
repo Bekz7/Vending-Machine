@@ -9,20 +9,18 @@ public class InMemoryMachineCreditsRepository implements MachineCreditsRepositor
 
   private InMemoryCreditsRepositoryImpl creditsRepository = new InMemoryCreditsRepositoryImpl();
 
-  public ConcurrentHashMap getAllCreditsMap(){
+  @Override
+  public ConcurrentHashMap getAllCredits() {
     return creditsRepository.getAllCredits();
-  }
-
-  public void persistCoins(BigDecimal credits) {
-    creditsRepository.persistCoins(credits);
   }
 
   public BigDecimal checkBalance() {
     return creditsRepository.checkBalance();
   }
 
-  public void updateCoinBalance(Money coin, int coinAmount) {
-    creditsRepository.updateCoinBalance(coin, coinAmount);
+  @Override
+  public void persistCoins(Money coin, int coinsNumber) {
+    creditsRepository.persistCoins(coin, coinsNumber);
   }
 
   public void clearCoinsBalance() {

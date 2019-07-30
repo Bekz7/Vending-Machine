@@ -4,21 +4,15 @@ import lombok.Getter;
 import pl.bekz.vendingmachine.model.Money;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-import static org.springframework.data.util.Pair.toMap;
 
 public class InMemoryCreditsRepositoryImpl implements CreditsRepository {
 
-  @Getter private ConcurrentHashMap<Money, Integer> allCredits;
+  private ConcurrentHashMap<Money, Integer> allCredits;
   @Getter private BigDecimal balance;
 
   InMemoryCreditsRepositoryImpl() {
-    allCredits = initializeMapWithKeys();
+    this.allCredits = initializeMapWithKeys();
   }
 
   private ConcurrentHashMap<Money, Integer> initializeMapWithKeys() {
@@ -31,10 +25,9 @@ public class InMemoryCreditsRepositoryImpl implements CreditsRepository {
     return result;
   }
 
-//TODO how to put values from one map to other
   @Override
-  public void updateCoinBalance(ConcurrentHashMap coinMap) {
-
+  public ConcurrentHashMap getAllCredits() {
+    return allCredits;
   }
 
   @Override
@@ -46,27 +39,8 @@ public class InMemoryCreditsRepositoryImpl implements CreditsRepository {
   }
 
   @Override
-  public void persistCoins(BigDecimal credits) {
-    allCredits.entrySet().stream()
-        .sorted(ConcurrentHashMap.Entry.comparingByKey())
-        .forEach((money) -> countDenomination(money.getKey(), credits));
-  }
-
-  private void countDenomination(Money coin, BigDecimal credits) {
-
-    BigDecimal denomination = roundingCoinsNumbers(credits, coin.getValue());
-    if (isContain(denomination)) {
-      allCredits.put(coin, denomination.intValue());
-    }
-  }
-
-  private BigDecimal roundingCoinsNumbers(BigDecimal credits, BigDecimal coins) {
-    BigDecimal creditsLeft = credits.subtract(checkBalance());
-    return creditsLeft.divide(coins, 0, RoundingMode.DOWN);
-  }
-
-  private boolean isContain(BigDecimal credits) {
-    return credits.compareTo(BigDecimal.ZERO) > 0;
+  public void persistCoins(Money coin, int coinsNumber) {
+    allCredits.put(coin, coinsNumber);
   }
 
   @Override

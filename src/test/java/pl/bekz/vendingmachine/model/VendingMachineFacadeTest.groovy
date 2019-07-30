@@ -86,10 +86,14 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         facade.insertCoin(Money.DOLLAR)
 
         when:
+        println (facade.checkCustomerBalance())
+        println (facade.checkMachineCoinBalance())
         facade.buyProduct(cocaCola.getName())
 
         then:
         facade.show(cocaCola.getName()).amount < cocaCola.getAmount()
+        println (facade.checkCustomerBalance())
+        println (facade.checkMachineCoinBalance())
     }
 
     def "Should throw not enough coin exception"(){
@@ -111,6 +115,8 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
 
         when:
         facade.buyProduct(pepsi.getName())
+        println (facade.checkMachineCoinBalance())
+        println(facade.checkCustomerBalance())
 
         then:
         thrown(ExactChangeOnly)

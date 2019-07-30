@@ -44,7 +44,7 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
         creditsRepository.persistCoins(credits)
 
         then: "Should get map with ours coins equals to inputted allCredits"
-        creditsRepository.getAllCreditsMap() == fulfillCreditsMap()
+        creditsRepository.getAllCredits() == fulfillCreditsMap()
     }
 
     private static final def fulfillCreditsMap(){

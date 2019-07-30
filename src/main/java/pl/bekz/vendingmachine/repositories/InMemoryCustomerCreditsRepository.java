@@ -10,33 +10,31 @@ public class InMemoryCustomerCreditsRepository implements CustomerCreditsReposit
   private InMemoryCreditsRepositoryImpl creditsRepository = new InMemoryCreditsRepositoryImpl();
 
   @Override
-  public ConcurrentHashMap getAllCreditsMap(){
+  public ConcurrentHashMap getAllCredits(){
     return creditsRepository.getAllCredits();
   }
 
   public void insertCoin(Money coin) {
-    int coinsNumber = creditsRepository.getAllCredits().get(coin);
+    int coinsNumber = (int) creditsRepository.getAllCredits().get(coin);
 
     if (hasCoin(coin)) {
       coinsNumber++;
     } else {
       coinsNumber = 1;
     }
-    creditsRepository.updateCoinBalance(coin, coinsNumber);
+    persistCoins(coin, coinsNumber);
   }
 
-  @Override
-  public void updateCoinBalance(Money coin, int coinAmount) {
-    creditsRepository.updateCoinBalance(coin, coinAmount);
-  }
 
   public BigDecimal checkBalance() {
     return creditsRepository.checkBalance();
   }
 
-  public void persistCoins(BigDecimal credits) {
-    creditsRepository.persistCoins(credits);
+  @Override
+  public void persistCoins(Money coin, int coinsNumber) {
+    creditsRepository.persistCoins(coin, coinsNumber);
   }
+
 
   public void clearCoinsBalance() {
     creditsRepository.clearCoinsBalance();

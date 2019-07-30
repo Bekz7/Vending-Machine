@@ -7,8 +7,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public interface CreditsRepository {
 
-    void updateCoinBalance(ConcurrentHashMap coinMap);
-    BigDecimal checkBalance();
-    void persistCoins(BigDecimal credits);
-    void clearCoinsBalance();
+  ConcurrentHashMap getAllCredits();
+  BigDecimal checkBalance();
+
+  void persistCoins(Money coin,  int coinsNumber);
+
+  void clearCoinsBalance();
 }

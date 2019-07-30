@@ -12,15 +12,16 @@ import pl.bekz.vendingmachine.repositories.MachineCreditsRepository;
 import pl.bekz.vendingmachine.repositories.ProductRepository;
 
 import java.math.BigDecimal;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
 
 @Transactional
 public class VendingMachineFacade {
-  ProductCreator productCreator;
-  CustomerCreditsRepository customerCreditsRepository;
-  MachineCreditsRepository machineCreditsRepository;
-  ProductRepository productRepository;
+  private ProductCreator productCreator;
+  private CustomerCreditsRepository customerCreditsRepository;
+  private MachineCreditsRepository machineCreditsRepository;
+  private ProductRepository productRepository;
 
   public VendingMachineFacade(
       ProductCreator productCreator,
@@ -74,25 +75,32 @@ public class VendingMachineFacade {
     requireNonNull(productId);
     BigDecimal customerCredit = checkCustomerBalance();
 
-    if (!isProductOnStock(productId)) {
-      throw new ProductSoldOut(productId);
-    }
+    productOutOfStock(productId);
 
     final ProductDto product = show(productId);
 
-    if (!haveEnoughCredit(customerCredit, product)) {
-      throw new NotEnoughCoins();
-    }
-    machineCreditsRepository.updateCoinBalance();
-    machineCreditsRepository.persistCoins(customerCredit);
+    notEnoughCoins(customerCredit, product);
 
+    customerCredit.subtract(product.getPrice());
+    persistCustomerCoins();
     if (exactChangeOnly(product)) {
       throw new ExactChangeOnly();
     }
 
-    customerCredit = customerCredit.subtract(product.getPrice());
-    customerCreditsRepository.persistCoins(customerCredit);
     decreaseProductAmount(productId);
+    customerCreditsRepository.clearCoinsBalance();
+  }
+
+  private void productOutOfStock(String productId) {
+    if (!isProductOnStock(productId)) {
+      throw new ProductSoldOut(productId);
+    }
+  }
+
+  private void notEnoughCoins(BigDecimal customerCredit, ProductDto product){
+    if (!haveEnoughCredit(customerCredit, product)) {
+      throw new NotEnoughCoins();
+    }
   }
 
   private boolean haveEnoughCredit(BigDecimal customerCredit, ProductDto product) {
@@ -103,25 +111,34 @@ public class VendingMachineFacade {
     return show(productId).getAmount() > 0;
   }
 
-  //TODO problem with coins
   private boolean exactChangeOnly(ProductDto product) {
-    return machineCreditsRepository
-            .checkBalance()
-            .subtract(product.getPrice())
-            .intValue()
-        < 0  ;
+    BigDecimal restAfterBuying =
+        machineCreditsRepository.checkBalance().subtract(product.getPrice());
+    return restAfterBuying.intValue() < 0;
   }
 
-  private void decreaseProductAmount(String productId){
+  private void decreaseProductAmount(String productId) {
     productRepository.changeProductAmount(productId, -1);
   }
 
-
-  public void checkMachineCoinBalance() {
-    machineCreditsRepository.checkBalance();
+  public BigDecimal checkMachineCoinBalance() {
+    return machineCreditsRepository.checkBalance();
   }
 
   public void WithdrawMachineDeposit() {
     machineCreditsRepository.clearCoinsBalance();
+  }
+
+  private void persistCustomerCoins() {
+    ConcurrentHashMap<Money, Integer> machineCoins = machineCreditsRepository.getAllCredits();
+    ConcurrentHashMap<Money, Integer> customerCoins = customerCreditsRepository.getAllCredits();
+    machineCoins
+        .entrySet()
+        .forEach(entry -> entry.setValue((entry.getValue() + customerCoins.get(entry.getKey()))));
+  }
+
+  private void spendRest(BigDecimal productCost){
+    persistCustomerCoins();
+
   }
 }
