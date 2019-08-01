@@ -1,4 +1,4 @@
-package pl.bekz.vendingmachine.model;
+package pl.bekz.vendingmachine.model.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

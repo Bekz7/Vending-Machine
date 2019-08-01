@@ -7,6 +7,7 @@ import pl.bekz.vendingmachine.exceptions.ExactChangeOnly;
 import pl.bekz.vendingmachine.exceptions.NotEnoughCoins;
 import pl.bekz.vendingmachine.exceptions.ProductSoldOut;
 import pl.bekz.vendingmachine.model.dto.ProductDto;
+import pl.bekz.vendingmachine.model.entities.Product;
 import pl.bekz.vendingmachine.repositories.CustomerCreditsRepository;
 import pl.bekz.vendingmachine.repositories.MachineCreditsRepository;
 import pl.bekz.vendingmachine.repositories.ProductRepository;

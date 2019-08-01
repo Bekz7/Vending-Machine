@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import pl.bekz.vendingmachine.model.Product;
+import pl.bekz.vendingmachine.model.entities.Product;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
