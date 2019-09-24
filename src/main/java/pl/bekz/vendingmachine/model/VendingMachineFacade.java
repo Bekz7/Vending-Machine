@@ -3,42 +3,45 @@ package pl.bekz.vendingmachine.model;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-import pl.bekz.vendingmachine.exceptions.ExactChangeOnly;
 import pl.bekz.vendingmachine.exceptions.NotEnoughCoins;
 import pl.bekz.vendingmachine.exceptions.ProductSoldOut;
+import pl.bekz.vendingmachine.model.dto.CreditDto;
 import pl.bekz.vendingmachine.model.dto.ProductDto;
+import pl.bekz.vendingmachine.model.entities.Credit;
 import pl.bekz.vendingmachine.model.entities.Product;
-import pl.bekz.vendingmachine.repositories.CustomerCreditsRepository;
-import pl.bekz.vendingmachine.repositories.MachineCreditsRepository;
+import pl.bekz.vendingmachine.model.entities.Transaction;
+import pl.bekz.vendingmachine.repositories.CreditsRepository;
 import pl.bekz.vendingmachine.repositories.ProductRepository;
 
 import java.math.BigDecimal;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
 
 @Transactional
 public class VendingMachineFacade {
   private ProductCreator productCreator;
-  private CustomerCreditsRepository customerCreditsRepository;
-  private MachineCreditsRepository machineCreditsRepository;
+  private CreditCreator creditCreator;
+  private Transaction transaction;
+  private CreditsRepository creditsRepository;
   private ProductRepository productRepository;
 
   public VendingMachineFacade(
       ProductCreator productCreator,
-      CustomerCreditsRepository customerCreditsRepository,
-      MachineCreditsRepository machineCreditsRepository,
+      CreditCreator creditCreator,
+      Transaction transaction,
+      CreditsRepository creditsRepository,
       ProductRepository productRepository) {
     this.productCreator = productCreator;
-    this.customerCreditsRepository = customerCreditsRepository;
-    this.machineCreditsRepository = machineCreditsRepository;
+    this.creditCreator = creditCreator;
+    this.transaction = transaction;
+    this.creditsRepository = creditsRepository;
     this.productRepository = productRepository;
   }
 
   public ProductDto add(ProductDto productDto) {
     requireNonNull(productDto);
     Product product = productCreator.from(productDto);
-    product = productRepository.addNewProduct(product);
+    product = productRepository.saveProduct(product);
     return product.productDto();
   }
 
@@ -53,43 +56,46 @@ public class VendingMachineFacade {
     return productRepository.findAll(pageable).map(Product::productDto);
   }
 
-  public Product refill(String productDto) {
-    requireNonNull(productDto);
-    Product product = productRepository.findById(productDto);
-    return productRepository.changeProductAmount(product.productDto().getName(), 1);
+  public Product refill(String productName) {
+    requireNonNull(productName);
+    return changeProductAmount(productName, 1);
+  }
+
+  public Product decreaseProductAmount(String productName) {
+    requireNonNull(productName);
+    return changeProductAmount(productName, -1);
+  }
+
+  private Product changeProductAmount(String name, int amount) {
+    requireNonNull(name);
+    requireNonNull(amount);
+    Product product = productRepository.findById(name);
+    final int amountToChange = product.productDto().getAmount() + amount;
+    product = Product.builder().name(name).amount(amountToChange).build();
+    return productRepository.saveProduct(product);
   }
 
   public void insertCoin(Money coin) {
     requireNonNull(coin);
-    customerCreditsRepository.insertCoin(coin);
+    CreditDto creditDto = CreditDto.builder()
+            .coinName(coin.getCoinName())
+            .coinValue(coin.getValue())
+            .coinsNumber(1).build();
+    Credit credit = creditCreator.from(creditDto);
+    creditsRepository.saveCredit(credit);
+    transaction.setTransactionBalance(coin.getValue().add(transaction.getTransactionBalance()));
   }
 
   public BigDecimal checkCustomerBalance() {
-    return customerCreditsRepository.checkBalance();
+    return transaction.getTransactionBalance();
   }
 
   public void returnCustomerCoins() {
-    customerCreditsRepository.clearCoinsBalance();
+    transaction.setTransactionBalance(BigDecimal.ZERO);
   }
 
   public void buyProduct(String productId) {
     requireNonNull(productId);
-    BigDecimal customerCredit = checkCustomerBalance();
-
-    productOutOfStock(productId);
-
-    final ProductDto product = show(productId);
-
-    notEnoughCoins(customerCredit, product);
-
-    customerCredit.subtract(product.getPrice());
-    persistCustomerCoins();
-    if (exactChangeOnly(product)) {
-      throw new ExactChangeOnly();
-    }
-
-    decreaseProductAmount(productId);
-    customerCreditsRepository.clearCoinsBalance();
   }
 
   private void productOutOfStock(String productId) {
@@ -98,7 +104,7 @@ public class VendingMachineFacade {
     }
   }
 
-  private void notEnoughCoins(BigDecimal customerCredit, ProductDto product){
+  private void notEnoughCoins(BigDecimal customerCredit, ProductDto product) {
     if (!haveEnoughCredit(customerCredit, product)) {
       throw new NotEnoughCoins();
     }
@@ -113,33 +119,23 @@ public class VendingMachineFacade {
   }
 
   private boolean exactChangeOnly(ProductDto product) {
-    BigDecimal restAfterBuying =
-        machineCreditsRepository.checkBalance().subtract(product.getPrice());
+    //TODO Bad logic
+    BigDecimal restAfterBuying = transaction.getTransactionBalance().subtract(product.getPrice());
+//    BigDecimal restAfterBuying =
+//        creditsRepository.checkBalance().subtract(product.getPrice());
     return restAfterBuying.intValue() < 0;
   }
 
-  private void decreaseProductAmount(String productId) {
-    productRepository.changeProductAmount(productId, -1);
-  }
-
   public BigDecimal checkMachineCoinBalance() {
-    return machineCreditsRepository.checkBalance();
+    long coinTypesNumber = creditsRepository.count();
+    BigDecimal machineBalance = BigDecimal.ZERO;
+    for (int i=0; i<coinTypesNumber; i++){
+         creditsRepository.findById()
+    }
   }
 
   public void WithdrawMachineDeposit() {
-    machineCreditsRepository.clearCoinsBalance();
+    creditsRepository.deleteAll();
   }
 
-  private void persistCustomerCoins() {
-    ConcurrentHashMap<Money, Integer> machineCoins = machineCreditsRepository.getAllCredits();
-    ConcurrentHashMap<Money, Integer> customerCoins = customerCreditsRepository.getAllCredits();
-    machineCoins
-        .entrySet()
-        .forEach(entry -> entry.setValue((entry.getValue() + customerCoins.get(entry.getKey()))));
-  }
-
-  private void spendRest(BigDecimal productCost){
-    persistCustomerCoins();
-
-  }
 }

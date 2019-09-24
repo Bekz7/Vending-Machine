@@ -1,17 +1,17 @@
 package pl.bekz.vendingmachine.repositories;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.Repository;
 import pl.bekz.vendingmachine.model.Money;
+import pl.bekz.vendingmachine.model.entities.Credit;
 
-import java.math.BigDecimal;
-import java.util.concurrent.ConcurrentHashMap;
+public interface CreditsRepository extends Repository<Credit, Money> {
 
-public interface CreditsRepository extends Repository {
+  Credit saveCredit(Credit credit);
 
-  ConcurrentHashMap getAllCredits();
-  BigDecimal checkBalance();
+  long count();
 
-  void persistCoins(Money coin,  int coinsNumber);
+  void deleteAll();
 
-  void clearCoinsBalance();
+  Credit findById(String coinName);
+
 }

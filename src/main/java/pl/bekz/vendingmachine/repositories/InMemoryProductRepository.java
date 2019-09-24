@@ -16,18 +16,9 @@ public class InMemoryProductRepository implements ProductRepository {
   @Getter private ConcurrentHashMap<String, Product> map = new ConcurrentHashMap<>();
 
   @Override
-  public Product addNewProduct(Product product) {
+  public Product saveProduct(Product product) {
     requireNonNull(product);
     map.put(product.productDto().getName(), product);
-    return product;
-  }
-
-  @Override
-  public Product changeProductAmount(String name, int amount) {
-    Product product = findById(name);
-    final int refill = product.productDto().getAmount() + amount;
-    product = Product.builder().amount(refill).build();
-    map.put(name, product);
     return product;
   }
 

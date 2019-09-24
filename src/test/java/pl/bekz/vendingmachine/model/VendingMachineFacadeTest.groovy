@@ -35,28 +35,28 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
     }
 
     def "Should find all products"() {
-        given:
+        given: "As a Vendor I want add some product"
         facade.add(cocaCola)
         facade.add(cocoRise)
         facade.add(pepsi)
 
-        when:
+        when: "When client want to see my all products"
         Page<ProductDto> foundProduct = facade.findAll(new PageRequest(0, 10))
 
-        then:
+        then: "Should see all machine products"
         foundProduct.contains(cocaCola)
         foundProduct.contains(cocoRise)
         foundProduct.contains(pepsi)
     }
 
     def "Should refill chosen product"(){
-        given:
+        given: "As a Vendor I want add product"
         facade.add(cocaCola)
 
-        when:
+        when: "I want want refill"
         facade.refill(cocaCola.getName())
 
-        then:
+        then: "Should get more amount of refiled product"
         facade.show(cocaCola.getName()).amount == 3
     }
 
@@ -65,6 +65,9 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         facade.insertCoin(Money.DOLLAR)
 
         expect:
+        println(facade.checkCustomerBalance())
+        println(facade.checkMachineCoinBalance())
+
         facade.checkCustomerBalance() == Money.DOLLAR.value
     }
 
@@ -112,11 +115,11 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         facade.add(pepsi)
         facade.insertCoin(Money.DOLLAR)
         facade.insertCoin(Money.QUARTER)
+        println (facade.checkMachineCoinBalance())
+        println(facade.checkCustomerBalance())
 
         when:
         facade.buyProduct(pepsi.getName())
-        println (facade.checkMachineCoinBalance())
-        println(facade.checkCustomerBalance())
 
         then:
         thrown(ExactChangeOnly)
