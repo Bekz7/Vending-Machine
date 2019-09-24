@@ -1,17 +1,22 @@
 package pl.bekz.vendingmachine.repositories;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.Repository;
 import pl.bekz.vendingmachine.model.Money;
+import pl.bekz.vendingmachine.model.entities.Credit;
 
 import java.math.BigDecimal;
-import java.util.concurrent.ConcurrentHashMap;
 
-public interface CreditsRepository extends Repository {
+public interface CreditsRepository extends Repository<Credit, Money> {
 
-  ConcurrentHashMap getAllCredits();
-  BigDecimal checkBalance();
+    Credit addNewCredits(Credit credit);
 
-  void persistCoins(Money coin,  int coinsNumber);
+    void returnCredits(BigDecimal cashToReturn);
 
-  void clearCoinsBalance();
+    Credit findById(Money coin);
+
+    Page<Credit> findAll(Pageable pageable);
+
+    void clearCoinsBalance();
 }

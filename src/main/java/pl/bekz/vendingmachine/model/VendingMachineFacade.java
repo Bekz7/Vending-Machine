@@ -8,30 +8,26 @@ import pl.bekz.vendingmachine.exceptions.NotEnoughCoins;
 import pl.bekz.vendingmachine.exceptions.ProductSoldOut;
 import pl.bekz.vendingmachine.model.dto.ProductDto;
 import pl.bekz.vendingmachine.model.entities.Product;
-import pl.bekz.vendingmachine.repositories.CustomerCreditsRepository;
-import pl.bekz.vendingmachine.repositories.MachineCreditsRepository;
+import pl.bekz.vendingmachine.repositories.CreditsRepository;
 import pl.bekz.vendingmachine.repositories.ProductRepository;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
-
+/*
 @Transactional
 public class VendingMachineFacade {
   private ProductCreator productCreator;
-  private CustomerCreditsRepository customerCreditsRepository;
-  private MachineCreditsRepository machineCreditsRepository;
+  private CreditsRepository creditsRepository;
   private ProductRepository productRepository;
 
   public VendingMachineFacade(
       ProductCreator productCreator,
-      CustomerCreditsRepository customerCreditsRepository,
-      MachineCreditsRepository machineCreditsRepository,
+      CreditsRepository creditsRepository,
       ProductRepository productRepository) {
     this.productCreator = productCreator;
-    this.customerCreditsRepository = customerCreditsRepository;
-    this.machineCreditsRepository = machineCreditsRepository;
+    this.creditsRepository = creditsRepository;
     this.productRepository = productRepository;
   }
 
@@ -92,6 +88,10 @@ public class VendingMachineFacade {
     customerCreditsRepository.clearCoinsBalance();
   }
 
+  private void startTransaction(){
+
+  }
+
   private void productOutOfStock(String productId) {
     if (!isProductOnStock(productId)) {
       throw new ProductSoldOut(productId);
@@ -143,3 +143,4 @@ public class VendingMachineFacade {
 
   }
 }
+*/

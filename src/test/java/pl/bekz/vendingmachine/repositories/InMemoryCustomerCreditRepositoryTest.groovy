@@ -4,8 +4,8 @@ import pl.bekz.vendingmachine.model.Money
 import spock.lang.Specification
 
 import java.util.concurrent.ConcurrentHashMap
-
-class InMemoryCustomerCreditsRepositoryTest extends Specification {
+/*
+class InMemoryCustomerCreditRepositoryTest extends Specification {
 
     private InMemoryCustomerCreditsRepository creditsRepository = new InMemoryCustomerCreditsRepository()
 
@@ -57,3 +57,4 @@ class InMemoryCustomerCreditsRepositoryTest extends Specification {
         return result
     }
 }
+*/
