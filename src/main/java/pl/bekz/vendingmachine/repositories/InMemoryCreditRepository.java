@@ -1,9 +1,9 @@
 package pl.bekz.vendingmachine.repositories;
 
 import lombok.Getter;
-import pl.bekz.vendingmachine.model.Money;
 import pl.bekz.vendingmachine.model.entities.Credit;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,8 +21,14 @@ public class InMemoryCreditRepository implements CreditsRepository {
   }
 
   @Override
-  public long count(){
-   return getMap().size();
+  public BigDecimal getMachineBalance() {
+    BigDecimal machineBalance = BigDecimal.ZERO;
+    if (map.values().iterator().hasNext()) {
+      Integer coinsNumber = map.values().iterator().next().creditsDto().getCoinsNumber();
+      BigDecimal coinValue = map.values().iterator().next().creditsDto().getCoinValue();
+      machineBalance = machineBalance.add(coinValue.multiply(BigDecimal.valueOf(coinsNumber)));
+    }
+    return machineBalance;
   }
 
   @Override
@@ -31,7 +37,7 @@ public class InMemoryCreditRepository implements CreditsRepository {
   }
 
   @Override
-  public void deleteAll(){
+  public void deleteAll() {
     map.clear();
   }
 }

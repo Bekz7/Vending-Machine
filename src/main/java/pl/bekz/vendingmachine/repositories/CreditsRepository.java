@@ -4,14 +4,15 @@ import org.springframework.data.repository.Repository;
 import pl.bekz.vendingmachine.model.Money;
 import pl.bekz.vendingmachine.model.entities.Credit;
 
+import java.math.BigDecimal;
+
 public interface CreditsRepository extends Repository<Credit, Money> {
 
   Credit saveCredit(Credit credit);
 
-  long count();
+  BigDecimal getMachineBalance();
 
   void deleteAll();
 
   Credit findById(String coinName);
-
 }

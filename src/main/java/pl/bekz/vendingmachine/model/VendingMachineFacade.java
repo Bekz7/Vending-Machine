@@ -51,7 +51,7 @@ public class VendingMachineFacade {
     return product.productDto();
   }
 
-  public Page<ProductDto> findAll(Pageable pageable) {
+  public Page<ProductDto> findAllProducts(Pageable pageable) {
     requireNonNull(pageable);
     return productRepository.findAll(pageable).map(Product::productDto);
   }
@@ -99,7 +99,7 @@ public class VendingMachineFacade {
   }
 
   private void productOutOfStock(String productId) {
-    if (!isProductOnStock(productId)) {
+    if (!isProductInStock(productId)) {
       throw new ProductSoldOut(productId);
     }
   }
@@ -114,7 +114,7 @@ public class VendingMachineFacade {
     return customerCredit.compareTo(product.getPrice()) > 0;
   }
 
-  private boolean isProductOnStock(String productId) {
+  private boolean isProductInStock(String productId) {
     return show(productId).getAmount() > 0;
   }
 
@@ -127,11 +127,7 @@ public class VendingMachineFacade {
   }
 
   public BigDecimal checkMachineCoinBalance() {
-    long coinTypesNumber = creditsRepository.count();
-    BigDecimal machineBalance = BigDecimal.ZERO;
-    for (int i=0; i<coinTypesNumber; i++){
-         creditsRepository.findById()
-    }
+   return creditsRepository.getMachineBalance();
   }
 
   public void WithdrawMachineDeposit() {

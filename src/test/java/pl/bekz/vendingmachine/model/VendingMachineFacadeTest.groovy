@@ -41,7 +41,7 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         facade.add(pepsi)
 
         when: "When client want to see my all products"
-        Page<ProductDto> foundProduct = facade.findAll(new PageRequest(0, 10))
+        Page<ProductDto> foundProduct = facade.findAllProducts(new PageRequest(0, 10))
 
         then: "Should see all machine products"
         foundProduct.contains(cocaCola)

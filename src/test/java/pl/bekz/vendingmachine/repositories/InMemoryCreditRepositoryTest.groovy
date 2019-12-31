@@ -21,7 +21,7 @@ class InMemoryCreditRepositoryTest extends Specification {
 
     def "Should insert a coin"(){
         given: "Coin inserted"
-        def dollar = CreditDto.builder().coinsNumber(1).coin(DOLLAR).build()
+        def dollar = CreditDto.builder().coinsNumber(1).coinName(DOLLAR).build()
         when: ""
         Credit credit = creditCreator.from(dollar)
         creditRepository.saveCredit(credit)
