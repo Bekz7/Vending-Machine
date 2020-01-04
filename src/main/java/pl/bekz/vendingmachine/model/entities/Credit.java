@@ -6,9 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import pl.bekz.vendingmachine.model.dto.CreditDto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -19,6 +17,8 @@ import java.math.BigDecimal;
 public class Credit {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     @Column(unique = true, nullable = false)
     private String coinName;
     @Column(nullable = false)
@@ -28,6 +28,7 @@ public class Credit {
 
     public CreditDto creditsDto(){
         return CreditDto.builder()
+                .id(id)
                 .coinName(coinName)
                 .coinValue(coinsValue)
                 .coinsNumber(coinsNumber)

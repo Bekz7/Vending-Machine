@@ -6,13 +6,15 @@ import pl.bekz.vendingmachine.model.entities.Credit;
 
 import java.math.BigDecimal;
 
-public interface CreditsRepository extends Repository<Credit, Money> {
+public interface CreditsRepository extends Repository<Credit, Integer> {
 
   Credit saveCredit(Credit credit);
 
-  BigDecimal getMachineBalance();
+  Credit findById(int id);
 
   void deleteAll();
 
-  Credit findById(String coinName);
+
+  long count();
+
 }

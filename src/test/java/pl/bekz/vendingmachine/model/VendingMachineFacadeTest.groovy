@@ -49,7 +49,7 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         foundProduct.contains(pepsi)
     }
 
-    def "Should refill chosen product"(){
+    def "Should refill chosen product"() {
         given: "As a Vendor I want add product"
         facade.add(cocaCola)
 
@@ -60,7 +60,7 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         facade.show(cocaCola.getName()).amount == 3
     }
 
-    def "As a Customer should insert coin"(){
+    def "As a Customer should insert coin"() {
         given:
         facade.insertCoin(Money.DOLLAR)
 
@@ -71,7 +71,7 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         facade.checkCustomerBalance() == Money.DOLLAR.value
     }
 
-    def "As a Customer I want return all my coins" (){
+    def "As a Customer I want return all my coins"() {
         given:
         facade.insertCoin(Money.DOLLAR)
 
@@ -82,24 +82,24 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         facade.checkCustomerBalance() == BigDecimal.ZERO
     }
 
-    def "After buying product should decrease product amount"(){
+    def "After buying product should decrease product amount"() {
         given:
         facade.add(cocaCola)
         facade.insertCoin(Money.DOLLAR)
         facade.insertCoin(Money.DOLLAR)
 
         when:
-        println (facade.checkCustomerBalance())
-        println (facade.checkMachineCoinBalance())
+        println(facade.checkCustomerBalance())
+        println(facade.checkMachineCoinBalance())
         facade.buyProduct(cocaCola.getName())
 
         then:
         facade.show(cocaCola.getName()).amount < cocaCola.getAmount()
-        println (facade.checkCustomerBalance())
-        println (facade.checkMachineCoinBalance())
+        println(facade.checkCustomerBalance())
+        println(facade.checkMachineCoinBalance())
     }
 
-    def "Should throw not enough coin exception"(){
+    def "Should throw not enough coin exception"() {
         given:
         facade.add(cocaCola)
 
@@ -110,12 +110,24 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         thrown(NotEnoughCoins)
     }
 
-    def "Machine should inform exact change only"(){
+    def "Should check machine balance"() {
+        given:
+        facade.insertCoin(Money.DOLLAR)
+        facade.insertCoin(Money.DOLLAR)
+
+        when:
+        def machineBalance = facade.checkCustomerBalance()
+
+        then:
+        machineBalance == BigDecimal.valueOf(2)
+    }
+
+    def "Machine should inform exact change only"() {
         given:
         facade.add(pepsi)
         facade.insertCoin(Money.DOLLAR)
         facade.insertCoin(Money.QUARTER)
-        println (facade.checkMachineCoinBalance())
+        println(facade.checkMachineCoinBalance())
         println(facade.checkCustomerBalance())
 
         when:

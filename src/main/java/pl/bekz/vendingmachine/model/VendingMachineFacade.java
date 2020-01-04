@@ -77,10 +77,12 @@ public class VendingMachineFacade {
 
   public void insertCoin(Money coin) {
     requireNonNull(coin);
-    CreditDto creditDto = CreditDto.builder()
+    CreditDto creditDto =
+        CreditDto.builder()
             .coinName(coin.getCoinName())
             .coinValue(coin.getValue())
-            .coinsNumber(1).build();
+            .coinsNumber(1)
+            .build();
     Credit credit = creditCreator.from(creditDto);
     creditsRepository.saveCredit(credit);
     transaction.setTransactionBalance(coin.getValue().add(transaction.getTransactionBalance()));
@@ -96,6 +98,12 @@ public class VendingMachineFacade {
 
   public void buyProduct(String productId) {
     requireNonNull(productId);
+  }
+
+  private void returnRestCoins(BigDecimal coinsToReturn) {
+    for (int i=0; i<creditsRepository.count(); i++){
+
+    }
   }
 
   private void productOutOfStock(String productId) {
@@ -119,19 +127,24 @@ public class VendingMachineFacade {
   }
 
   private boolean exactChangeOnly(ProductDto product) {
-    //TODO Bad logic
     BigDecimal restAfterBuying = transaction.getTransactionBalance().subtract(product.getPrice());
-//    BigDecimal restAfterBuying =
-//        creditsRepository.checkBalance().subtract(product.getPrice());
+    //    BigDecimal restAfterBuying =
+    //        creditsRepository.checkBalance().subtract(product.getPrice());
     return restAfterBuying.intValue() < 0;
   }
 
   public BigDecimal checkMachineCoinBalance() {
-   return creditsRepository.getMachineBalance();
+    BigDecimal machineBalance = BigDecimal.ZERO;
+    for (int i = 0; i < creditsRepository.count(); i++) {
+      BigDecimal coinValue = creditsRepository.findById(i).creditsDto().getCoinValue();
+      Integer coinsNumber = creditsRepository.findById(i).creditsDto().getCoinsNumber();
+      machineBalance = machineBalance.add(coinValue.multiply(BigDecimal.valueOf(coinsNumber)));
+    }
+
+    return machineBalance;
   }
 
   public void WithdrawMachineDeposit() {
     creditsRepository.deleteAll();
   }
-
 }
