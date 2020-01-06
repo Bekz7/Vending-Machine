@@ -14,6 +14,8 @@ import pl.bekz.vendingmachine.repositories.CreditsRepository;
 import pl.bekz.vendingmachine.repositories.ProductRepository;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
 
@@ -68,7 +70,6 @@ public class VendingMachineFacade {
 
   private Product changeProductAmount(String name, int amount) {
     requireNonNull(name);
-    requireNonNull(amount);
     Product product = productRepository.findById(name);
     final int amountToChange = product.productDto().getAmount() + amount;
     product = Product.builder().name(name).amount(amountToChange).build();
@@ -126,22 +127,35 @@ public class VendingMachineFacade {
     return show(productId).getAmount() > 0;
   }
 
-  private boolean exactChangeOnly(ProductDto product) {
-    BigDecimal restAfterBuying = transaction.getTransactionBalance().subtract(product.getPrice());
-    //    BigDecimal restAfterBuying =
-    //        creditsRepository.checkBalance().subtract(product.getPrice());
+  private boolean exactChangeOnly() {
+    BigDecimal restAfterBuying = transaction.getTransactionBalance();
+    while (!BigDecimal.ZERO.equals(restAfterBuying)){
+//      restAfterBuying = restAfterBuying.subtract()
+    }
     return restAfterBuying.intValue() < 0;
   }
 
-  public BigDecimal checkMachineCoinBalance() {
-    BigDecimal machineBalance = BigDecimal.ZERO;
+  private Map<BigDecimal, Integer> transactionMachineBalance(){
+    Map<BigDecimal, Integer> temp = new ConcurrentHashMap<>();
+
     for (int i = 0; i < creditsRepository.count(); i++) {
       BigDecimal coinValue = creditsRepository.findById(i).creditsDto().getCoinValue();
       Integer coinsNumber = creditsRepository.findById(i).creditsDto().getCoinsNumber();
-      machineBalance = machineBalance.add(coinValue.multiply(BigDecimal.valueOf(coinsNumber)));
+      temp.put(coinValue, coinsNumber);
     }
+    return temp;
+  }
 
-    return machineBalance;
+  //TODO Make this right
+  private BigDecimal getMostValueCoin(){
+    return BigDecimal.ZERO;
+  }
+//TODO check is this work properly
+  public BigDecimal checkMachineCoinBalance() {
+    final BigDecimal[] machineBalance = {BigDecimal.ZERO};
+    transactionMachineBalance().forEach((key, value) -> machineBalance[0] = machineBalance[0].add(key.multiply(BigDecimal.valueOf(value))));
+
+    return machineBalance[0];
   }
 
   public void WithdrawMachineDeposit() {
