@@ -14,8 +14,10 @@ import pl.bekz.vendingmachine.repositories.CreditsRepository;
 import pl.bekz.vendingmachine.repositories.ProductRepository;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -82,10 +84,10 @@ public class VendingMachineFacade {
         CreditDto.builder()
             .coinName(coin.getCoinName())
             .coinValue(coin.getValue())
-            .coinsNumber(1)
+            .coinsNumber(+1)
             .build();
     Credit credit = creditCreator.from(creditDto);
-    creditsRepository.saveCredit(credit);
+    creditsRepository.save(credit);
     transaction.setTransactionBalance(coin.getValue().add(transaction.getTransactionBalance()));
   }
 
@@ -102,9 +104,7 @@ public class VendingMachineFacade {
   }
 
   private void returnRestCoins(BigDecimal coinsToReturn) {
-    for (int i=0; i<creditsRepository.count(); i++){
-
-    }
+    for (int i = 0; i < creditsRepository.count(); i++) {}
   }
 
   private void productOutOfStock(String productId) {
@@ -129,31 +129,34 @@ public class VendingMachineFacade {
 
   private boolean exactChangeOnly() {
     BigDecimal restAfterBuying = transaction.getTransactionBalance();
-    while (!BigDecimal.ZERO.equals(restAfterBuying)){
-//      restAfterBuying = restAfterBuying.subtract()
+    while (!BigDecimal.ZERO.equals(restAfterBuying)) {
+      //      restAfterBuying = restAfterBuying.subtract()
     }
     return restAfterBuying.intValue() < 0;
   }
 
-  private Map<BigDecimal, Integer> transactionMachineBalance(){
-    Map<BigDecimal, Integer> temp = new ConcurrentHashMap<>();
-
-    for (int i = 0; i < creditsRepository.count(); i++) {
-      BigDecimal coinValue = creditsRepository.findById(i).creditsDto().getCoinValue();
-      Integer coinsNumber = creditsRepository.findById(i).creditsDto().getCoinsNumber();
-      temp.put(coinValue, coinsNumber);
-    }
-    return temp;
+  // TODO Make this right
+  public BigDecimal getMostValueCoin() {
+   return creditsRepository.getCredits().values().stream()
+            .map(credit -> credit.creditsDto().getCoinValue()).max(Comparator.naturalOrder()).get();
   }
 
-  //TODO Make this right
-  private BigDecimal getMostValueCoin(){
-    return BigDecimal.ZERO;
+  private Map<String, Credit> tempCredits(){
+    return new ConcurrentHashMap<>(creditsRepository.getCredits());
   }
-//TODO check is this work properly
+
   public BigDecimal checkMachineCoinBalance() {
-    final BigDecimal[] machineBalance = {BigDecimal.ZERO};
-    transactionMachineBalance().forEach((key, value) -> machineBalance[0] = machineBalance[0].add(key.multiply(BigDecimal.valueOf(value))));
+    BigDecimal[] machineBalance = {BigDecimal.ZERO};
+    creditsRepository
+        .getCredits()
+        .forEach(
+            (key, value) ->
+                machineBalance[0] =
+                    machineBalance[0].add(
+                        value
+                            .creditsDto()
+                            .getCoinValue()
+                            .multiply(BigDecimal.valueOf(value.creditsDto().getCoinsNumber()))));
 
     return machineBalance[0];
   }

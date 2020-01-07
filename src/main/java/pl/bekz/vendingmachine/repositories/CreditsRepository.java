@@ -4,17 +4,17 @@ import org.springframework.data.repository.Repository;
 import pl.bekz.vendingmachine.model.Money;
 import pl.bekz.vendingmachine.model.entities.Credit;
 
-import java.math.BigDecimal;
+import java.util.Map;
 
-public interface CreditsRepository extends Repository<Credit, Integer> {
+public interface CreditsRepository extends Repository<Credit, Money> {
 
-  Credit saveCredit(Credit credit);
-
-  Credit findById(int id);
-
-  void deleteAll();
-
+  void save(Credit credit);
 
   long count();
 
+  void deleteAll();
+
+  Credit findById(String coinName);
+
+  Map<String, Credit>getCredits();
 }

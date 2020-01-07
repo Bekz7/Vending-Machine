@@ -110,16 +110,40 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         thrown(NotEnoughCoins)
     }
 
-    def "Should check machine balance"() {
+    def "Should check customer balance"() {
         given:
         facade.insertCoin(Money.DOLLAR)
         facade.insertCoin(Money.DOLLAR)
 
         when:
-        def machineBalance = facade.checkCustomerBalance()
+        def customerBalance = facade.checkCustomerBalance()
 
         then:
-        machineBalance == BigDecimal.valueOf(2)
+        customerBalance == BigDecimal.valueOf(2)
+    }
+
+    def "As Vendor should be able to check machine actual balance"(){
+        given:
+        facade.insertCoin(Money.DOLLAR)
+        facade.insertCoin(Money.QUARTER)
+
+        when:
+        def machineBalance = facade.checkMachineCoinBalance()
+
+        then:
+        machineBalance == BigDecimal.valueOf(1.25)
+    }
+
+    def"Should check most value coin from machine balance"(){
+        given:
+        facade.insertCoin(Money.DOLLAR)
+        facade.insertCoin(Money.QUARTER)
+
+        when:
+        def mostValueCoin = facade.mostValueCoin
+
+        then:
+        mostValueCoin == BigDecimal.ONE
     }
 
     def "Machine should inform exact change only"() {

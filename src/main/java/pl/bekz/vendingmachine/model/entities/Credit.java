@@ -17,8 +17,6 @@ import java.math.BigDecimal;
 public class Credit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
     @Column(unique = true, nullable = false)
     private String coinName;
     @Column(nullable = false)
@@ -28,7 +26,6 @@ public class Credit {
 
     public CreditDto creditsDto(){
         return CreditDto.builder()
-                .id(id)
                 .coinName(coinName)
                 .coinValue(coinsValue)
                 .coinsNumber(coinsNumber)
