@@ -6,6 +6,7 @@ import pl.bekz.vendingmachine.exceptions.ExactChangeOnly
 import pl.bekz.vendingmachine.exceptions.NotEnoughCoins
 import pl.bekz.vendingmachine.exceptions.ProductNotFound
 import pl.bekz.vendingmachine.model.dto.ProductDto
+import pl.bekz.vendingmachine.model.entities.Transaction
 import spock.lang.Specification
 
 class VendingMachineFacadeTest extends Specification implements SampleProducts {
@@ -134,16 +135,21 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         machineBalance == BigDecimal.valueOf(1.25)
     }
 
-    def"Should check most value coin from machine balance"(){
+    def"Should not be exact change only"(){
         given:
+        Transaction transaction = new Transaction()
+        facade.insertCoin(Money.DIME)
+        facade.insertCoin(Money.DIME)
         facade.insertCoin(Money.DOLLAR)
         facade.insertCoin(Money.QUARTER)
 
+        transaction.setTransactionBalance(BigDecimal.valueOf(1.25))
+
         when:
-        def mostValueCoin = facade.mostValueCoin
+        def mostValueCoin = facade.getMostValueCoinTReturn()
 
         then:
-        mostValueCoin == BigDecimal.ONE
+        !facade.exactChangeOnly()
     }
 
     def "Machine should inform exact change only"() {
