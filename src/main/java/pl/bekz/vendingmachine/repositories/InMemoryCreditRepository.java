@@ -2,14 +2,14 @@ package pl.bekz.vendingmachine.repositories;
 
 import pl.bekz.vendingmachine.model.entities.Credit;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
 
 public class InMemoryCreditRepository implements CreditsRepository {
 
-  private Map<String, Credit> map = new HashMap<>();
+  private Map<String, Credit> map = new ConcurrentHashMap<>();
 
   @Override
   public void save(Credit credit) {
