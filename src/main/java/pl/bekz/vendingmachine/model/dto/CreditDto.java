@@ -3,12 +3,14 @@ package pl.bekz.vendingmachine.model.dto;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import pl.bekz.vendingmachine.model.Money;
+
+import java.math.BigDecimal;
 
 @Builder
 @Getter
 @EqualsAndHashCode
 public class CreditDto {
-    private Money coin;
+    private String coinName;
+    private BigDecimal coinValue;
     private Integer coinsNumber;
 }
