@@ -16,9 +16,6 @@ import pl.bekz.vendingmachine.repositories.ProductRepository;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
 
@@ -76,32 +73,32 @@ public class VendingMachineFacade {
     Product product = productRepository.findOneOrThrow(name);
     final int amountToChange = product.productDto().getAmount() + amount;
     product = Product.builder().name(name).amount(amountToChange).build();
-    return productRepository.saveProduct(product).productDto();
+    productRepository.saveProduct(product);
+    return product.productDto();
   }
 
   public void insertCoin(Money coin) {
     requireNonNull(coin);
-    CreditDto creditDto = addCoinNewCoin(coin);
-    Credit insertedCoin = creditCreator.from(creditDto);
-    creditsRepository.save(insertedCoin);
+    add(coin);
     transaction.setTransactionBalance(coin.getValue().add(transaction.getTransactionBalance()));
   }
 
-  private CreditDto changeCoinAmount(Money coin, int coinNumberToChange){
-    CreditDto creditDto = creditsRepository.findOrCreate(coin).creditsDto();
-    return Optional.ofNullable(creditDto)
-            .map(dto -> CreditDto.builder().coinsNumber(dto.getCoinsNumber() + coinNumberToChange).build())
-            .get();
-  }
-
-  private CreditDto decreesCoins(Money coin){
+  private void decrees(Money coin){
     final int coinDecrees = -1;
-    return changeCoinAmount(coin, coinDecrees);
+    changeCoinAmount(coin, coinDecrees);
   }
 
-  private CreditDto addCoinNewCoin(Money coin) {
+  private void add(Money coin) {
     final int coinIncest = 1;
-    return changeCoinAmount(coin, coinIncest);
+    changeCoinAmount(coin, coinIncest);
+  }
+
+  private CreditDto changeCoinAmount(Money coin, int amount){
+    requireNonNull(coin);
+    Credit credit = creditsRepository.findOrThrow(coin.getCoinName());
+    final int amountToChange = credit.creditsDto().getCoinsNumber() + amount;
+    credit = Credit.builder().coinName(coin.getCoinName()).coinsValue(coin.getValue()).coinsNumber(amountToChange).build();
+    return creditsRepository.save(credit).creditsDto();
   }
 
   public BigDecimal checkCustomerBalance() {
@@ -158,27 +155,19 @@ public class VendingMachineFacade {
     return BigDecimal.ZERO.compareTo(returnRestMoney(clientBalanceAfterBuying(productName))) != 0;
   }
 
-  //TODO how to remember deceased coins from map?
   private BigDecimal returnRestMoney(BigDecimal restAfterBuying) {
-    Map<String, Integer> temporaryCoinToReturn = new ConcurrentHashMap<>();
     while (BigDecimal.ZERO.compareTo(restAfterBuying) > 0) {
-
-      restAfterBuying = restAfterBuying.subtract(getMostValueCoinTReturn());
+        restAfterBuying = restAfterBuying.subtract(getMostValueCoinTReturn());
     }
     return restAfterBuying;
   }
 
-  private String getMostValueCoinNameToReturn(){
-    return creditsRepository.getCredits().values().stream()
-            .map(credit -> credit.creditsDto().getCoinName())
-            .filter(s -> )
-  }
   private BigDecimal getMostValueCoinTReturn() {
     return creditsRepository.getCredits().values().stream()
         .map(credit -> credit.creditsDto().getCoinValue())
         .filter(coin -> coin.compareTo(transaction.getTransactionBalance()) <= 0)
         .max(Comparator.naturalOrder())
-        .get();
+        .orElse(BigDecimal.ZERO);
   }
 
   public BigDecimal checkMachineCoinBalance() {

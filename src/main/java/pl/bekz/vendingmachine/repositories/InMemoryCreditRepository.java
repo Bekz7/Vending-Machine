@@ -12,14 +12,10 @@ public class InMemoryCreditRepository implements CreditsRepository {
   private Map<String, Credit> map = new ConcurrentHashMap<>();
 
   @Override
-  public void save(Credit credit) {
+  public Credit save(Credit credit) {
     requireNonNull(credit);
     map.put(credit.creditsDto().getCoinName(), credit);
-  }
-
-  @Override
-  public long count() {
-    return getCredits().size();
+    return credit;
   }
 
   @Override

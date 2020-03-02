@@ -1,9 +1,9 @@
 package pl.bekz.vendingmachine.repositories
 
-import pl.bekz.vendingmachine.model.Money
+
 import spock.lang.Specification
 
-class InMemoryCreditRepositoryTest extends Specification {
+class InMemoryCreditDtoRepositoryTest extends Specification {
 
     private InMemoryCreditRepository creditRepository = new InMemoryCreditRepository()
 
