@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import pl.bekz.vendingmachine.exceptions.ExactChangeOnly
 import pl.bekz.vendingmachine.exceptions.NotEnoughCoins
-import pl.bekz.vendingmachine.exceptions.ProductNotFound
+import pl.bekz.vendingmachine.exceptions.ItemNotFound
 import pl.bekz.vendingmachine.model.dto.ProductDto
 import pl.bekz.vendingmachine.model.entities.Transaction
 import spock.lang.Specification
@@ -32,7 +32,7 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         facade.show("something")
 
         then:
-        thrown(ProductNotFound)
+        thrown(ItemNotFound)
     }
 
     def "Should find all products"() {
@@ -55,7 +55,7 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         facade.add(cocaCola)
 
         when: "I want want refill"
-        facade.refill(cocaCola.getName())
+        facade.saveIncreaseProductAmount(cocaCola.getName())
 
         then: "Should get more amount of refiled product"
         facade.show(cocaCola.getName()).amount == 3
