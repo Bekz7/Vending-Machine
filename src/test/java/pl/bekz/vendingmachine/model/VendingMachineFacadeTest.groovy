@@ -7,11 +7,12 @@ import pl.bekz.vendingmachine.exceptions.NotEnoughCoins
 import pl.bekz.vendingmachine.exceptions.ItemNotFound
 import pl.bekz.vendingmachine.model.dto.ProductDto
 import pl.bekz.vendingmachine.model.entities.Transaction
+import pl.bekz.vendingmachine.model.facades.VendingFacade
 import spock.lang.Specification
 
 class VendingMachineFacadeTest extends Specification implements SampleProducts {
 
-    private VendingMachineFacade facade = new VendingMachineConfiguration().vendingMachineFacade()
+    private VendingFacade facade = new VendingMachineConfiguration().vendingMachineFacade()
 
     void setup() {
     }
@@ -143,7 +144,7 @@ class VendingMachineFacadeTest extends Specification implements SampleProducts {
         facade.insertCoin(Money.DOLLAR)
         facade.insertCoin(Money.QUARTER)
 
-        transaction.setTransactionBalance(BigDecimal.valueOf(1.25))
+        transaction.setCustomerBalance(BigDecimal.valueOf(1.25))
 
         when:
         def mostValueCoin = facade.getMostValueCoinTReturn()

@@ -6,8 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Transaction {
 
     private String productName = "";
-    private BigDecimal transactionBalance = BigDecimal.ZERO;
-    private Map<String, Integer> coinToReturn = new ConcurrentHashMap<>();
-
+    private BigDecimal customerBalance = BigDecimal.ZERO;
+    private List<String> coinToReturn;
 }

@@ -1,4 +1,4 @@
-package pl.bekz.vendingmachine.model;
+package pl.bekz.vendingmachine.model.facades;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -6,6 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.bekz.vendingmachine.exceptions.ExactChangeOnly;
 import pl.bekz.vendingmachine.exceptions.NotEnoughCoins;
 import pl.bekz.vendingmachine.exceptions.ProductSoldOut;
+import pl.bekz.vendingmachine.model.CreditCreator;
+import pl.bekz.vendingmachine.model.Money;
+import pl.bekz.vendingmachine.model.ProductCreator;
 import pl.bekz.vendingmachine.model.dto.CreditDto;
 import pl.bekz.vendingmachine.model.dto.ProductDto;
 import pl.bekz.vendingmachine.model.entities.Credit;
@@ -18,12 +21,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static pl.bekz.vendingmachine.model.entities.Credit.builder;
 
 @Transactional
-public class VendingMachineFacade {
+public class VendingFacade {
     private ProductCreator productCreator;
     private CreditCreator creditCreator;
     private Transaction transaction;
@@ -31,7 +35,7 @@ public class VendingMachineFacade {
     private ProductRepository productRepository;
     private List<BigDecimal> temp = new ArrayList<>();
 
-    public VendingMachineFacade(
+    public VendingFacade(
             ProductCreator productCreator,
             CreditCreator creditCreator,
             Transaction transaction,
@@ -90,7 +94,7 @@ public class VendingMachineFacade {
         return product.productDto();
     }
 
-    public void storeCoin(Money coin){
+    public void storeCoin(Money coin) {
         add(insertCoin(coin));
         storeCustomerBalance(coin);
     }
@@ -101,8 +105,8 @@ public class VendingMachineFacade {
         return builder().coinName(coin.getCoinName()).coinsValue(coin.getValue()).coinsNumber(creditAmount).build().creditsDto();
     }
 
-    private void storeCustomerBalance(Money coin){
-        transaction.setTransactionBalance(coin.getValue().add(transaction.getTransactionBalance()));
+    private void storeCustomerBalance(Money coin) {
+        transaction.setCustomerBalance(coin.getValue().add(transaction.getCustomerBalance()));
     }
 
     private CreditDto add(CreditDto dto) {
@@ -125,11 +129,11 @@ public class VendingMachineFacade {
     }
 
     public BigDecimal checkCustomerBalance() {
-        return transaction.getTransactionBalance();
+        return transaction.getCustomerBalance();
     }
 
     public void returnCustomerCoins() {
-        transaction.setTransactionBalance(BigDecimal.ZERO);
+        transaction.setCustomerBalance(BigDecimal.ZERO);
     }
 
     public void buyProduct(String productName) {
@@ -139,12 +143,12 @@ public class VendingMachineFacade {
         checkIfCoinEnough(productName);
         checkIfExactChangeOnly(productName);
         saveDecreasedProductAmount(productName);
-        transaction.setTransactionBalance(clientBalanceAfterBuying(productName));
+        transaction.setCustomerBalance(clientBalanceAfterBuying(productName));
     }
 
 
     private BigDecimal clientBalanceAfterBuying(String productId) {
-        BigDecimal clientBalance = transaction.getTransactionBalance();
+        BigDecimal clientBalance = transaction.getCustomerBalance();
         BigDecimal price = show(productId).getPrice();
         return clientBalance.subtract(price);
     }
@@ -162,7 +166,7 @@ public class VendingMachineFacade {
     }
 
     private boolean haveEnoughCredit(String productId) {
-        return transaction.getTransactionBalance().compareTo(show(productId).getPrice()) > 0;
+        return transaction.getCustomerBalance().compareTo(show(productId).getPrice()) > 0;
     }
 
     private boolean isProductInStock(String productId) {
@@ -181,20 +185,22 @@ public class VendingMachineFacade {
 
     private BigDecimal returnRestMoney(BigDecimal restAfterBuying) {
         while (BigDecimal.ZERO.compareTo(restAfterBuying) > 0) {
-            restAfterBuying = restAfterBuying.subtract(getMostValueCoinTReturn());
+            restAfterBuying = restAfterBuying.subtract(getMostValueCoinToReturn());
+            temp.add(getMostValueCoinToReturn());
         }
         return restAfterBuying;
     }
 
-    private void dasd(String productName){
-        final BigDecimal clientBalanceMinusProduct = transaction.getTransactionBalance().subtract(clientBalanceAfterBuying(productName));
-        while (clientBalanceMinusProduct)
+    private void dupa() {
+        final List<CreditDto> collect = creditsRepository.getCredits().values().stream()
+                .map(Credit::creditsDto).filter(dto -> (dto.getCoinValue().compareTo(getMostValueCoinToReturn()) == 0))
+                .collect(Collectors.toList());
     }
-//TODO find name for arg.
-    private BigDecimal getMostValueCoinTReturn(BigDecimal ) {
+
+    private BigDecimal getMostValueCoinToReturn() {
         return creditsRepository.getCredits().values().stream()
                 .map(credit -> credit.creditsDto().getCoinValue())
-                .filter(coin -> coin.compareTo(transaction.getTransactionBalance()) <= 0)
+                .filter(coin -> coin.compareTo(transaction.getCustomerBalance()) <= 0)
                 .max(Comparator.naturalOrder())
                 .orElse(BigDecimal.ZERO);
     }
@@ -203,14 +209,11 @@ public class VendingMachineFacade {
         BigDecimal[] machineBalance = {BigDecimal.ZERO};
         creditsRepository
                 .getCredits()
-                .forEach(
-                        (key, value) ->
-                                machineBalance[0] =
-                                        machineBalance[0].add(
-                                                value
-                                                        .creditsDto()
-                                                        .getCoinValue()
-                                                        .multiply(BigDecimal.valueOf(value.creditsDto().getCoinsNumber()))));
+                .forEach((key, value) -> machineBalance[0] = machineBalance[0].add(
+                        value
+                                .creditsDto()
+                                .getCoinValue()
+                                .multiply(BigDecimal.valueOf(value.creditsDto().getCoinsNumber()))));
 
         return machineBalance[0];
     }
