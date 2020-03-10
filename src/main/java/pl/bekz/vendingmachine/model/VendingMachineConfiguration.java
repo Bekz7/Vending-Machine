@@ -26,7 +26,8 @@ public class VendingMachineConfiguration {
   CreditFacade creditFacade(
           CreditsRepository creditsRepository){
     CreditCreator creditCreator = new CreditCreator();
-    return new CreditFacade(creditCreator, creditsRepository);
+    Transaction transaction = new Transaction();
+    return new CreditFacade(creditCreator, creditsRepository, transaction);
   }
 
   ProductFacade productFacade(){
