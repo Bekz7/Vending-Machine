@@ -58,7 +58,9 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
 
 //    private CreditDto findGreatestCredit(BigDecimal balanceToCheck) {
 //        return creditsRepository.getCredits().values().stream()
-//                .map(Credit::creditsDto).filter(dto -> (dto.getCoinValue().compareTo(getMostValueCoinToReturn(balanceToCheck)) == 0)).findFirst()
+//                .map(Credit::creditsDto)
+//                 .filter(dto -> (dto.getCoinValue().compareTo(getMostValueCoinToReturn(balanceToCheck)) == 0))
+//                 .findFirst()
 //                .orElseThrow(() -> new CreditNotFound(getMostValueCoinToReturn(balanceToCheck)));
 //    }
 

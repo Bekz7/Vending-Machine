@@ -56,6 +56,10 @@ public class CustomerService {
         return builder().coinName(coin.getCoinName()).coinsValue(coin.getValue()).build().creditsDto();
     }
 
+    public BigDecimal customerBalance(){
+        return creditFacade.checkCustomerBalance();
+    }
+
     private ProductDto decreaseProductAmount(String productId){
         return productFacade.changeAmount(productId, -1);
     }
