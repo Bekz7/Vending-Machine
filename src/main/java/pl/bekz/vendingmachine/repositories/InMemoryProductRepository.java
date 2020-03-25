@@ -10,10 +10,17 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
+import static pl.bekz.vendingmachine.ProductFactory.*;
 
 public class InMemoryProductRepository implements ProductRepository {
 
   @Getter private ConcurrentHashMap<String, Product> map = new ConcurrentHashMap<>();
+
+  public InMemoryProductRepository(){
+    map.put("Pepsi", pepsi(3));
+    map.put("Coca-cola", cocaCola(2));
+    map.put("Redbull", redbull(0));
+  }
 
   @Override
   public Product save(Product product) {

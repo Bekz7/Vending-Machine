@@ -13,5 +13,4 @@ public interface GenericRepository<T> {
     default T findOneOrThrow(String name) {
         return Optional.ofNullable(findById(name)).orElseThrow(() -> new ItemNotFound(name));
     }
-
 }

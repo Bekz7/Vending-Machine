@@ -6,10 +6,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
+import static pl.bekz.vendingmachine.CreditFactory.*;
+import static pl.bekz.vendingmachine.model.Money.*;
 
 public class InMemoryCreditRepository implements CreditsRepository {
 
   private Map<String, Credit> map = new ConcurrentHashMap<>();
+
+  public InMemoryCreditRepository(){
+    map.put(DOLLAR.toString(), dollar());
+    map.put(QUARTER.toString(), quarter());
+    map.put(DIME.toString(), dime());
+    map.put(NICKEL.toString(), nickel());
+
+    map.forEach((s, credit) ->  System.out.println(s + " " + credit));
+    System.out.println();
+  }
 
   @Override
   public Credit save(Credit credit) {

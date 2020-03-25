@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface CreditsRepository extends Repository<Credit, String>, GenericRepository<Credit> {
 
-    void deleteAll();
+  void deleteAll();
 
-    Map<String, Credit> getCredits();
+  Map<String, Credit> getCredits();
 }
