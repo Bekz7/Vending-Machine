@@ -1,6 +1,6 @@
 package pl.bekz.vendingmachine.model;
 
-public enum Products {
+public enum Drinks {
   PEPSI,
   COCA_COLA,
   REDBULL

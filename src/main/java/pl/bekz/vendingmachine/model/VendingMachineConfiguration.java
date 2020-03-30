@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import pl.bekz.vendingmachine.model.entities.Transaction;
 import pl.bekz.vendingmachine.model.facades.CreditFacade;
 import pl.bekz.vendingmachine.model.facades.ProductFacade;
-import pl.bekz.vendingmachine.model.facades.VendingFacade;
 import pl.bekz.vendingmachine.model.services.CustomerService;
 import pl.bekz.vendingmachine.repositories.CreditsRepository;
 import pl.bekz.vendingmachine.repositories.InMemoryCreditRepository;
@@ -14,10 +13,6 @@ import pl.bekz.vendingmachine.repositories.ProductRepository;
 
 @Configuration
 public class VendingMachineConfiguration {
-
-  VendingFacade vendingMachineFacade() {
-    return vendingMachineFacade(new InMemoryCreditRepository(), new InMemoryProductRepository());
-  }
 
   CreditFacade creditFacade() {
     return creditFacade(new InMemoryCreditRepository());
@@ -42,15 +37,5 @@ public class VendingMachineConfiguration {
   ProductFacade productFacade(ProductRepository productRepository) {
     ProductCreator productCreator = new ProductCreator();
     return new ProductFacade(productCreator, productRepository);
-  }
-
-  @Bean
-  VendingFacade vendingMachineFacade(
-      CreditsRepository creditsRepository, ProductRepository productRepository) {
-    ProductCreator productCreator = new ProductCreator();
-    CreditCreator creditCreator = new CreditCreator();
-    Transaction transaction = new Transaction();
-    return new VendingFacade(
-        productCreator, creditCreator, transaction, creditsRepository, productRepository);
   }
 }

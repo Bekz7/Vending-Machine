@@ -4,7 +4,7 @@ import pl.bekz.vendingmachine.model.entities.Product;
 
 import java.math.BigDecimal;
 
-import static pl.bekz.vendingmachine.model.Products.*;
+import static pl.bekz.vendingmachine.model.Drinks.*;
 
 
 public class ProductFactory {
@@ -22,4 +22,5 @@ public class ProductFactory {
   public static Product redbull(int amount) {
     return new Product(REDBULL.toString(), amount, BigDecimal.valueOf(1.6));
   }
+
 }

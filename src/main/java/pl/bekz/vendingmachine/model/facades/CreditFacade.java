@@ -50,11 +50,8 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
     Credit credit = creditsRepository.findOneOrThrow(name);
     final int amountToChange = credit.creditsDto().getCoinsNumber() + amount;
     final BigDecimal coinValue = credit.creditsDto().getCoinValue();
-    credit = Credit.builder()
-            .coinName(name)
-            .coinsNumber(amountToChange)
-            .coinsValue(coinValue)
-            .build();
+    credit =
+        Credit.builder().coinName(name).coinsNumber(amountToChange).coinsValue(coinValue).build();
     return credit.creditsDto();
   }
 
@@ -102,7 +99,7 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   }
 
   public void checkIfCoinEnough(BigDecimal productCost) {
-      requireNonNull(productCost);
+    requireNonNull(productCost);
     if (!haveEnoughCredit(productCost)) {
       throw new NotEnoughCoins();
     }
@@ -113,7 +110,7 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   }
 
   public void checkIfExactChangeOnly(BigDecimal balanceToCheck) {
-      requireNonNull(balanceToCheck);
+    requireNonNull(balanceToCheck);
     if (exactChangeOnly(balanceToCheck)) {
       throw new ExactChangeOnly();
     }
@@ -126,11 +123,11 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   }
 
   private List<BigDecimal> coinsListToReturn(BigDecimal balanceToCheck) {
-      requireNonNull(balanceToCheck);
+    requireNonNull(balanceToCheck);
     List<BigDecimal> coins = new ArrayList<>();
     while (BigDecimal.ZERO.compareTo(balanceToCheck) > 0) {
-        BigDecimal mostValueCoinToReturn = getMostValueCoinToReturn(balanceToCheck);
-        balanceToCheck = balanceToCheck.subtract(mostValueCoinToReturn);
+      BigDecimal mostValueCoinToReturn = getMostValueCoinToReturn(balanceToCheck);
+      balanceToCheck = balanceToCheck.subtract(mostValueCoinToReturn);
       coins.add(mostValueCoinToReturn);
     }
     return coins;
@@ -141,13 +138,13 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   }
 
   public void increaseCustomerBalance(Money coin) {
-      requireNonNull(coin);
+    requireNonNull(coin);
     final BigDecimal currentCustomerBalance = transaction.getCustomerBalance();
     transaction.setCustomerBalance(currentCustomerBalance.add(coin.getValue()));
   }
 
   public void decreesCustomerBalance(BigDecimal productPrice) {
-      requireNonNull(productPrice);
+    requireNonNull(productPrice);
     final BigDecimal restAfterTransaction = checkCustomerBalance().subtract(productPrice);
     transaction.setCustomerBalance(restAfterTransaction);
   }
@@ -166,6 +163,11 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
                             .multiply(BigDecimal.valueOf(value.creditsDto().getCoinsNumber()))));
 
     return machineBalance[0];
+  }
+
+  public BigDecimal resetCustomerBalance() {
+    transaction.setCustomerBalance(BigDecimal.ZERO);
+    return transaction.getCustomerBalance();
   }
 
   public void WithdrawMachineDeposit() {

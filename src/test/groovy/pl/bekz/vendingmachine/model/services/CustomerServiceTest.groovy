@@ -9,8 +9,9 @@ import pl.bekz.vendingmachine.model.VendingMachineConfiguration
 import spock.lang.Specification
 
 import static pl.bekz.vendingmachine.model.Money.*
+import static pl.bekz.vendingmachine.model.Drinks.*
 
-class CustomerServiceTest extends Specification implements SampleProducts{
+class CustomerServiceTest extends Specification implements SampleProducts {
     private CustomerService service
 
     void setup() {
@@ -19,24 +20,24 @@ class CustomerServiceTest extends Specification implements SampleProducts{
 
     def "As a customer I want to check my balance"() {
         given:
-            service.insertCoin(DOLLAR)
-            service.insertCoin(DIME)
+        service.insertCoin(DOLLAR)
+        service.insertCoin(DIME)
 
         when:
-            def customerBalance = service.customerBalance()
+        def customerBalance = service.customerBalance()
 
         then:
-            0 == (customerBalance <=> 1.1)
+        0 == (customerBalance <=> 1.1)
     }
 
     def "As a Customer should't buy a product with small amount of cash"() {
         given:
-            service.insertCoin(DOLLAR)
+        service.insertCoin(DOLLAR)
 
         when:
-            service.buyProduct(pepsiSample.getName())
+        service.buyProduct(PEPSI.name())
         then:
-            thrown(NotEnoughCoins)
+        thrown(NotEnoughCoins)
     }
 
     def "As a Customer should be informed of the exact change only"() {
@@ -45,7 +46,7 @@ class CustomerServiceTest extends Specification implements SampleProducts{
         service.insertCoin(QUARTER)
 
         when:
-        service.buyProduct(cocaColaSample.getName())
+        service.buyProduct(COCA_COLA.name())
 
         then:
         thrown(ExactChangeOnly)
@@ -57,24 +58,36 @@ class CustomerServiceTest extends Specification implements SampleProducts{
         service.insertCoin(QUARTER)
 
         when:
-        service.buyProduct(redbullSample.getName())
+        service.buyProduct(REDBULL.name())
 
         then:
         thrown(ProductSoldOut)
     }
 
-    def "As a Customer should buy a product"(){
+    def "As a Customer should buy a product"() {
         given:
-            service.insertCoin(DOLLAR)
-            service.insertCoin(DIME)
+        service.insertCoin(DOLLAR)
+        service.insertCoin(DIME)
         print(service.customerBalance())
 
         when:
-            service.buyProduct(pepsiSample.getName())
+        service.buyProduct(PEPSI.name())
 
         then:
-            service.customerBalance() == BigDecimal.ZERO
+        service.customerBalance() == BigDecimal.ZERO
     }
 
+    def "As a Customer I want to saw all available products"(){
+        when:
+        def availableProduct = service.showAllAvailableProduct()
+        then:
+        !availableProduct.empty
+    }
 
+    def "As a Customer I want get my coin back"(){
+        when:
+        service.insertCoin(DOLLAR)
+        then:
+        service.spendTheRestToTheCustomer() == BigDecimal.ZERO
+    }
 }
