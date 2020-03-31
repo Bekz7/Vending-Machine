@@ -31,4 +31,8 @@ public class VendorService {
   public BigDecimal machineBalance(){
       return creditFacade.checkMachineCoinBalance();
   }
+
+  public void WithdrawMachineCoins(){
+    creditFacade.WithdrawMachineDeposit();
+  }
 }

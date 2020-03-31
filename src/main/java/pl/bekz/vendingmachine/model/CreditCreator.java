@@ -11,7 +11,7 @@ public class CreditCreator {
         return Credit.builder()
                 .coinName(creditDto.getCoinName())
                 .coinsValue(creditDto.getCoinValue())
-                .coinsNumber(creditDto.getCoinsNumber())
+                .coinAmount(creditDto.getCoinsAmount())
                 .build();
     }
 }

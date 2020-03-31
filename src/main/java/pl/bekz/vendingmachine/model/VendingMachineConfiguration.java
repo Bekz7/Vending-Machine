@@ -14,7 +14,7 @@ import pl.bekz.vendingmachine.repositories.ProductRepository;
 @Configuration
 public class VendingMachineConfiguration {
 
-  CreditFacade creditFacade() {
+  public CreditFacade creditFacade() {
     return creditFacade(new InMemoryCreditRepository());
   }
 

@@ -48,10 +48,10 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   public CreditDto changeAmount(String name, int amount) {
     requireNonNull(name);
     Credit credit = creditsRepository.findOneOrThrow(name);
-    final int amountToChange = credit.creditsDto().getCoinsNumber() + amount;
+    final int amountToChange = credit.creditsDto().getCoinsAmount() + amount;
     final BigDecimal coinValue = credit.creditsDto().getCoinValue();
     credit =
-        Credit.builder().coinName(name).coinsNumber(amountToChange).coinsValue(coinValue).build();
+        Credit.builder().coinName(name).coinAmount(amountToChange).coinsValue(coinValue).build();
     return credit.creditsDto();
   }
 
@@ -80,14 +80,24 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
     return changeAmount(dto.getCoinName(), -1);
   }
 
+//  private List<CreditDto> findCoinsToReturn(List<BigDecimal> coinsToReturn) {
+//    return creditsRepository.getCredits().values().stream()
+//        .map(Credit::creditsDto)
+//        .filter(
+//            dto ->
+//                coinsToReturn.stream()
+//                    .anyMatch(coinValue -> coinValue.compareTo(dto.getCoinValue()) == 0))
+//        .collect(Collectors.toList());
+//  }
+
   private List<CreditDto> findCoinsToReturn(List<BigDecimal> coinsToReturn) {
     return creditsRepository.getCredits().values().stream()
-        .map(Credit::creditsDto)
-        .filter(
-            dto ->
-                coinsToReturn.stream()
-                    .anyMatch(coinValue -> coinValue.compareTo(dto.getCoinValue()) == 0))
-        .collect(Collectors.toList());
+            .map(Credit::creditsDto)
+            .filter(
+                    dto ->
+                            coinsToReturn.stream()
+                                    .anyMatch(coinValue -> coinValue.compareTo(dto.getCoinValue()) == 0))
+            .collect(Collectors.toList());
   }
 
   private BigDecimal getMostValueCoinToReturn(BigDecimal balanceToCheck) {
@@ -125,7 +135,7 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   private List<BigDecimal> coinsListToReturn(BigDecimal balanceToCheck) {
     requireNonNull(balanceToCheck);
     List<BigDecimal> coins = new ArrayList<>();
-    while (BigDecimal.ZERO.compareTo(balanceToCheck) > 0) {
+    while (balanceToCheck.compareTo(BigDecimal.ZERO) != 0) {
       BigDecimal mostValueCoinToReturn = getMostValueCoinToReturn(balanceToCheck);
       balanceToCheck = balanceToCheck.subtract(mostValueCoinToReturn);
       coins.add(mostValueCoinToReturn);
@@ -160,7 +170,7 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
                         value
                             .creditsDto()
                             .getCoinValue()
-                            .multiply(BigDecimal.valueOf(value.creditsDto().getCoinsNumber()))));
+                            .multiply(BigDecimal.valueOf(value.creditsDto().getCoinsAmount()))));
 
     return machineBalance[0];
   }

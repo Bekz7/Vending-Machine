@@ -12,5 +12,5 @@ import java.math.BigDecimal;
 public class CreditDto {
     private String coinName;
     private BigDecimal coinValue;
-    private Integer coinsNumber;
+    private Integer coinsAmount;
 }

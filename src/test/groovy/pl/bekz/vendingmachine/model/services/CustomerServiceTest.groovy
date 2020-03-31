@@ -4,14 +4,13 @@ package pl.bekz.vendingmachine.model.services
 import pl.bekz.vendingmachine.exceptions.ExactChangeOnly
 import pl.bekz.vendingmachine.exceptions.NotEnoughCoins
 import pl.bekz.vendingmachine.exceptions.ProductSoldOut
-import pl.bekz.vendingmachine.model.SampleProducts
 import pl.bekz.vendingmachine.model.VendingMachineConfiguration
 import spock.lang.Specification
 
 import static pl.bekz.vendingmachine.model.Money.*
 import static pl.bekz.vendingmachine.model.Drinks.*
 
-class CustomerServiceTest extends Specification implements SampleProducts {
+class CustomerServiceTest extends Specification {
     private CustomerService service
 
     void setup() {

@@ -24,13 +24,13 @@ public class Credit {
     @Column(nullable = false)
     private BigDecimal coinsValue;
     @Column(nullable = false)
-    private Integer coinsNumber;
+    private Integer coinAmount;
 
     public CreditDto creditsDto(){
         return CreditDto.builder()
                 .coinName(coinName)
                 .coinValue(coinsValue)
-                .coinsNumber(coinsNumber)
+                .coinsAmount(coinAmount)
                 .build();
     }
 }
