@@ -16,7 +16,7 @@ public class InMemoryProductRepository implements ProductRepository {
 
   private ConcurrentHashMap<String, Product> map = new ConcurrentHashMap<>();
 
-  public InMemoryProductRepository(){
+  public InMemoryProductRepository() {
     map.put(PEPSI.name(), pepsi(3));
     map.put(COCA_COLA.name(), cocaCola(2));
     map.put(REDBULL.name(), redbull(0));
@@ -38,8 +38,4 @@ public class InMemoryProductRepository implements ProductRepository {
   public Page<Product> findAll(Pageable pageable) {
     return new PageImpl<>(new ArrayList<>(map.values()), pageable, map.size());
   }
-
-    public ConcurrentHashMap<String, Product> getMap() {
-        return this.map;
-    }
 }

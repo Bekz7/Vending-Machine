@@ -13,14 +13,11 @@ public class InMemoryCreditRepository implements CreditsRepository {
 
   private Map<String, Credit> map = new ConcurrentHashMap<>();
 
-  public InMemoryCreditRepository(){
+  public InMemoryCreditRepository() {
     map.put(DOLLAR.toString(), dollar());
     map.put(QUARTER.toString(), quarter());
     map.put(DIME.toString(), dime());
     map.put(NICKEL.toString(), nickel());
-
-    map.forEach((s, credit) ->  System.out.println(s + " " + credit));
-    System.out.println();
   }
 
   @Override

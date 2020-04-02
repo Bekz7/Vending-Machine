@@ -4,6 +4,7 @@ package pl.bekz.vendingmachine.model.services
 import pl.bekz.vendingmachine.exceptions.ExactChangeOnly
 import pl.bekz.vendingmachine.exceptions.NotEnoughCoins
 import pl.bekz.vendingmachine.exceptions.ProductSoldOut
+import pl.bekz.vendingmachine.model.Money
 import pl.bekz.vendingmachine.model.VendingMachineConfiguration
 import spock.lang.Specification
 
@@ -17,10 +18,13 @@ class CustomerServiceTest extends Specification {
         service = new VendingMachineConfiguration().customerService()
     }
 
+    private void insertFewCoins(Money... coins){
+        coins.each {Money coin -> service.insertCoin(coin)}
+    }
+
     def "As a customer I want to check my balance"() {
         given:
-        service.insertCoin(DOLLAR)
-        service.insertCoin(DIME)
+        insertFewCoins(DOLLAR, DIME)
 
         when:
         def customerBalance = service.customerBalance()
@@ -41,8 +45,7 @@ class CustomerServiceTest extends Specification {
 
     def "As a Customer should be informed of the exact change only"() {
         given:
-        service.insertCoin(DOLLAR)
-        service.insertCoin(QUARTER)
+        insertFewCoins(DOLLAR, QUARTER)
 
         when:
         service.buyProduct(PEPSI.name())
@@ -53,8 +56,7 @@ class CustomerServiceTest extends Specification {
 
     def "As a Customer should be informed of the product out of stock"() {
         given:
-        service.insertCoin(DOLLAR)
-        service.insertCoin(QUARTER)
+        insertFewCoins(DOLLAR, QUARTER)
 
         when:
         service.buyProduct(REDBULL.name())
@@ -65,8 +67,7 @@ class CustomerServiceTest extends Specification {
 
     def "As a Customer should buy a product"() {
         given:
-        service.insertCoin(DOLLAR)
-        service.insertCoin(DIME)
+        insertFewCoins(DOLLAR, DIME)
         print(service.customerBalance())
 
         when:
@@ -81,12 +82,5 @@ class CustomerServiceTest extends Specification {
         def availableProduct = service.showAllAvailableProduct()
         then:
         !availableProduct.empty
-    }
-
-    def "As a Customer I want get my coin back"(){
-        when:
-        service.insertCoin(DOLLAR)
-        then:
-        service.spendTheRestToTheCustomer() == BigDecimal.ZERO
     }
 }

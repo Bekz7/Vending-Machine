@@ -25,7 +25,7 @@ public class CustomerService {
   }
 
   public void insertCoin(Money coin) {
-    creditFacade.add(increaseCoinAmount(coin.toString()));
+    creditFacade.add(increaseCoinAmount(coin.name()));
     creditFacade.increaseCustomerBalance(coin);
   }
 

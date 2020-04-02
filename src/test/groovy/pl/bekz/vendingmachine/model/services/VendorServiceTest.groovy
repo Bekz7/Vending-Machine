@@ -1,6 +1,6 @@
 package pl.bekz.vendingmachine.model.services
 
-import pl.bekz.vendingmachine.model.facades.ProductFacade
+
 import spock.lang.Specification
 
 class VendorServiceTest extends Specification {

@@ -7,7 +7,7 @@ import pl.bekz.vendingmachine.model.dto.CreditDto
 @CompileStatic
 trait SampleCoins {
 
-
+//TODO Maybe worth to think of using the CreditFactory against createCoin
     CreditDto dollarSamples = createCoin(Money.DOLLAR, 2)
     CreditDto dimeSamples = createCoin(Money.DIME, 4)
 
