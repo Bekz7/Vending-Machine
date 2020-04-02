@@ -1,5 +1,7 @@
 package pl.bekz.vendingmachine.model.facades
 
+import pl.bekz.vendingmachine.exceptions.ExactChangeOnly
+import pl.bekz.vendingmachine.exceptions.NotEnoughCoins
 import pl.bekz.vendingmachine.model.Money
 import pl.bekz.vendingmachine.model.SampleCoins
 import pl.bekz.vendingmachine.model.VendingMachineConfiguration
@@ -19,14 +21,11 @@ class CreditFacadeTest extends Specification implements SampleCoins {
     }
 
     private void addCreditsToCustomer(Money... coins){
-//        Stream.of(coins).forEach(creditFacade.increaseCustomerBalance(coins))
-        for (Money coin: coins){
-            creditFacade.increaseCustomerBalance(coin)
-        }
-
+        Stream.of(coins)
+                .forEach({ coin -> creditFacade.increaseCustomerBalance(coin as Money) })
     }
 
-    def "As a Machine I want spend the rest to client"(){
+    def "As a Machine I want spend the rest to the Customer"(){
         given:
             creditFacade.add(dimeSamples)
             creditFacade.add(dollarSamples)
@@ -35,7 +34,15 @@ class CreditFacadeTest extends Specification implements SampleCoins {
             creditFacade.decreesMachineBalance()
         then:
             creditFacade.checkMachineCoinBalance() == BigDecimal.ZERO
+    }
 
+    def "As a Machine, I want to check if Customer has enough money to make the transaction"(){
+        given:
+            addCreditsToCustomer(DIME)
+        when:
+            creditFacade.checkIfCoinEnough(DOLLAR.value)
+        then:
+            thrown(NotEnoughCoins)
     }
 
     def "As a Machine I want to change coins amount"(){
@@ -51,10 +58,48 @@ class CreditFacadeTest extends Specification implements SampleCoins {
                     coinAmountToChange
     }
 
-    def "As a Vendor I want check Machine balance"(){
+    def "As a Vendor I want check the Machine balance"(){
         when:
             creditFacade.add(dollarSamples)
         then:
         2.0 == creditFacade.checkMachineCoinBalance()
+    }
+
+    def "As a Customer I want to be inform of the exact change only"(){
+        given:
+            creditFacade.add(dimeSamples)
+            addCreditsToCustomer(DOLLAR)
+        when:
+            creditFacade.checkIfExactChangeOnly(creditFacade.checkCustomerBalance())
+        then:
+            thrown(ExactChangeOnly)
+    }
+
+    def "As a Machine I want to save a Customer money after transaction"(){
+        given:
+            addCreditsToCustomer(DOLLAR, DOLLAR)
+        when:
+            creditFacade.decreesCustomerBalance(DOLLAR.value)
+        then:
+            creditFacade.checkCustomerBalance() == DOLLAR.value
+    }
+
+
+    def "As a Machine I want to withdraw the balance to the Customer"(){
+        given:
+            addCreditsToCustomer(DOLLAR, DOLLAR)
+        when:
+            creditFacade.resetCustomerBalance()
+        then:
+            creditFacade.checkCustomerBalance() == BigDecimal.ZERO
+    }
+
+    def "As a Machine I want to withdraw the balance"(){
+        given:
+            creditFacade.add(dollarSamples)
+        when:
+            creditFacade.withdrawMachineDeposit()
+        then:
+            creditFacade.checkMachineCoinBalance() == BigDecimal.ZERO
     }
 }

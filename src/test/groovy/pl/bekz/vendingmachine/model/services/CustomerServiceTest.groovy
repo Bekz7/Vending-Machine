@@ -45,7 +45,7 @@ class CustomerServiceTest extends Specification {
         service.insertCoin(QUARTER)
 
         when:
-        service.buyProduct(COCA_COLA.name())
+        service.buyProduct(PEPSI.name())
 
         then:
         thrown(ExactChangeOnly)

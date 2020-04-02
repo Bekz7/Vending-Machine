@@ -10,8 +10,6 @@ import pl.bekz.vendingmachine.model.entities.Transaction;
 import pl.bekz.vendingmachine.repositories.CreditsRepository;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,53 +57,24 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
     decreesCreditsList().forEach(this::add);
   }
 
-  //    private CreditDto findGreatestCredit(BigDecimal balanceToCheck) {
-  //        return creditsRepository.getCredits().values().stream()
-  //                .map(Credit::creditsDto)
-  //                 .filter(dto ->
-  // (dto.getCoinValue().compareTo(getMostValueCoinToReturn(balanceToCheck)) == 0))
-  //                 .findFirst()
-  //                .orElseThrow(() -> new
-  // CreditNotFound(getMostValueCoinToReturn(balanceToCheck)));
-  //    }
-
   private List<CreditDto> decreesCreditsList() {
-    return findCoinsToReturn(coinsListToReturn(checkCustomerBalance())).stream()
+    return getListCoinsToReturn(checkCustomerBalance()).stream()
         .map(this::decreesCredit)
         .collect(Collectors.toList());
   }
 
   private CreditDto decreesCredit(CreditDto dto) {
     requireNonNull(dto);
-    return changeAmount(dto.getCoinName(), -1);
+    final int coinToDecrees = -dto.getCoinsAmount();
+    return changeAmount(dto.getCoinName(), coinToDecrees);
   }
 
-//  private List<CreditDto> findCoinsToReturn(List<BigDecimal> coinsToReturn) {
-//    return creditsRepository.getCredits().values().stream()
-//        .map(Credit::creditsDto)
-//        .filter(
-//            dto ->
-//                coinsToReturn.stream()
-//                    .anyMatch(coinValue -> coinValue.compareTo(dto.getCoinValue()) == 0))
-//        .collect(Collectors.toList());
-//  }
-
-  private List<CreditDto> findCoinsToReturn(List<BigDecimal> coinsToReturn) {
+  private List<CreditDto> getListCoinsToReturn(BigDecimal balanceToCheck) {
     return creditsRepository.getCredits().values().stream()
-            .map(Credit::creditsDto)
-            .filter(
-                    dto ->
-                            coinsToReturn.stream()
-                                    .anyMatch(coinValue -> coinValue.compareTo(dto.getCoinValue()) == 0))
-            .collect(Collectors.toList());
-  }
-
-  private BigDecimal getMostValueCoinToReturn(BigDecimal balanceToCheck) {
-    return creditsRepository.getCredits().values().stream()
-        .map(credit -> credit.creditsDto().getCoinValue())
-        .filter(coin -> coin.compareTo(balanceToCheck) <= 0)
-        .max(Comparator.naturalOrder())
-        .orElse(BigDecimal.ZERO);
+        .map(Credit::creditsDto)
+        .filter(creditDto -> creditDto.getCoinsAmount() > 0)
+        .filter(creditDto -> creditDto.getCoinValue().compareTo(balanceToCheck) <= 0)
+        .collect(Collectors.toList());
   }
 
   public void checkIfCoinEnough(BigDecimal productCost) {
@@ -127,20 +96,12 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   }
 
   private boolean exactChangeOnly(BigDecimal balanceToCheck) {
-    final BigDecimal coinsValue =
-        coinsListToReturn(balanceToCheck).stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+    final List<BigDecimal> allCoinsByValue =
+        getListCoinsToReturn(balanceToCheck).stream()
+            .map(CreditDto::getCoinValue)
+            .collect(Collectors.toList());
+    BigDecimal coinsValue = allCoinsByValue.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
     return coinsValue.compareTo(balanceToCheck) != 0;
-  }
-
-  private List<BigDecimal> coinsListToReturn(BigDecimal balanceToCheck) {
-    requireNonNull(balanceToCheck);
-    List<BigDecimal> coins = new ArrayList<>();
-    while (balanceToCheck.compareTo(BigDecimal.ZERO) != 0) {
-      BigDecimal mostValueCoinToReturn = getMostValueCoinToReturn(balanceToCheck);
-      balanceToCheck = balanceToCheck.subtract(mostValueCoinToReturn);
-      coins.add(mostValueCoinToReturn);
-    }
-    return coins;
   }
 
   public BigDecimal checkCustomerBalance() {
@@ -171,7 +132,6 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
                             .creditsDto()
                             .getCoinValue()
                             .multiply(BigDecimal.valueOf(value.creditsDto().getCoinsAmount()))));
-
     return machineBalance[0];
   }
 
@@ -180,7 +140,7 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
     return transaction.getCustomerBalance();
   }
 
-  public void WithdrawMachineDeposit() {
+  public void withdrawMachineDeposit() {
     creditsRepository.deleteAll();
   }
 }

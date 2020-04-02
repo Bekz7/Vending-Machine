@@ -33,6 +33,6 @@ public class VendorService {
   }
 
   public void WithdrawMachineCoins(){
-    creditFacade.WithdrawMachineDeposit();
+    creditFacade.withdrawMachineDeposit();
   }
 }
