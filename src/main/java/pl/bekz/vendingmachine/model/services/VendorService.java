@@ -19,20 +19,20 @@ public class VendorService {
     this.productFacade = productFacade;
   }
 
-  public void increaseProductAmount(String productName) {
+  public ProductDto increaseProductAmount(String productName) {
     requireNonNull(productName);
-    productFacade.add(increaseAmount(productName));
+    return productFacade.add(increaseAmount(productName));
   }
 
   private ProductDto increaseAmount(String productName) {
     return productFacade.changeAmount(productName, 1);
   }
 
-  public BigDecimal machineBalance(){
-      return creditFacade.checkMachineCoinBalance();
+  public BigDecimal machineBalance() {
+    return creditFacade.checkMachineCoinBalance();
   }
 
-  public void WithdrawMachineCoins(){
+  public void withdrawMachineCoins() {
     creditFacade.withdrawMachineDeposit();
   }
 }

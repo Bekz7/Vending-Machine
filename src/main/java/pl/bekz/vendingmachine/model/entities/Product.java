@@ -27,5 +27,4 @@ public class Product {
             .price(price)
             .build();
   }
-
 }

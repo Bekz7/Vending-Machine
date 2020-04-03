@@ -3,6 +3,7 @@ package pl.bekz.vendingmachine.model.services;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import pl.bekz.vendingmachine.exceptions.CreditNotFound;
 import pl.bekz.vendingmachine.model.Money;
 import pl.bekz.vendingmachine.model.dto.CreditDto;
 import pl.bekz.vendingmachine.model.dto.ProductDto;
@@ -24,16 +25,21 @@ public class CustomerService {
     this.productFacade = productFacade;
   }
 
-  public void insertCoin(Money coin) {
-    creditFacade.add(increaseCoinAmount(coin.name()));
-    creditFacade.increaseCustomerBalance(coin);
+  public void insertCoin(String coinName) {
+    try {
+      Money coin = Money.valueOf(coinName.toUpperCase());
+      creditFacade.add(increaseCoinAmount(coin.name()));
+      creditFacade.increaseCustomerBalance(coin);
+    } catch (IllegalArgumentException e) {
+      throw new CreditNotFound(coinName);
+    }
   }
 
   public Page<ProductDto> showAllAvailableProduct() {
     return productFacade.findAllProducts(PageRequest.of(0, 10));
   }
 
-  public void buyProduct(String productName) {
+  public String buyProduct(String productName) {
     requireNonNull(productName);
     final BigDecimal selectedProductPrice = productPrice(productName);
 
@@ -44,10 +50,11 @@ public class CustomerService {
     decreaseProductAmount(productName);
     creditFacade.decreesCustomerBalance(selectedProductPrice);
     creditFacade.decreesMachineBalance();
-    spendTheRestToTheCustomer();
+    reimburseMoneyToTheCustomer();
+    return productName;
   }
 
-  public BigDecimal spendTheRestToTheCustomer(){
+  public BigDecimal reimburseMoneyToTheCustomer() {
     return creditFacade.resetCustomerBalance();
   }
 

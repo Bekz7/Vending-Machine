@@ -1,6 +1,6 @@
 package pl.bekz.vendingmachine.model.services
 
-
+import pl.bekz.vendingmachine.exceptions.CreditNotFound
 import pl.bekz.vendingmachine.exceptions.ExactChangeOnly
 import pl.bekz.vendingmachine.exceptions.NotEnoughCoins
 import pl.bekz.vendingmachine.exceptions.ProductSoldOut
@@ -19,10 +19,10 @@ class CustomerServiceTest extends Specification {
     }
 
     private void insertFewCoins(Money... coins){
-        coins.each {Money coin -> service.insertCoin(coin)}
+        coins.each {Money coin -> service.insertCoin(coin.name())}
     }
 
-    def "As a customer I want to check my balance"() {
+    def "As a Customer I want to check my balance"() {
         given:
         insertFewCoins(DOLLAR, DIME)
 
@@ -33,9 +33,16 @@ class CustomerServiceTest extends Specification {
         0 == (customerBalance <=> 1.1)
     }
 
+    def "As a Customer, I want to be informed about the coins the machine accepts"(){
+        when:
+        service.insertCoin("wrong")
+        then:
+        thrown(CreditNotFound)
+    }
+
     def "As a Customer should't buy a product with small amount of cash"() {
         given:
-        service.insertCoin(DOLLAR)
+        service.insertCoin(DOLLAR.name())
 
         when:
         service.buyProduct(PEPSI.name())

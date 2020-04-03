@@ -13,6 +13,5 @@ import java.math.BigDecimal;
 @Setter
 public class Transaction {
 
-  private String productName = "";
   private BigDecimal customerBalance = BigDecimal.ZERO;
 }
