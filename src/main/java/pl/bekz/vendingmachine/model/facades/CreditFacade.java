@@ -11,6 +11,8 @@ import pl.bekz.vendingmachine.repositories.CreditsRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -120,15 +122,21 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
     transaction.setCustomerBalance(restAfterTransaction);
   }
 
+  private Map<String, CreditDto> getCredits() {
+    Map<String, CreditDto> map = new ConcurrentHashMap<>();
+    creditsRepository.getCredits().entrySet().stream().map(c -> map.put(c.getKey(), c.getValue().creditsDto()));
+    return map;
+  }
+
   public BigDecimal checkMachineCoinBalance() {
     BigDecimal[] machineBalance = {BigDecimal.ZERO};
     creditsRepository
-        .getCredits()
-        .forEach(
-            (key, value) ->
-                machineBalance[0] =
-                    machineBalance[0].add(
-                        value
+            .getCredits()
+            .forEach(
+                    (key, value) ->
+                            machineBalance[0] =
+                                    machineBalance[0].add(
+                                            value
                             .creditsDto()
                             .getCoinValue()
                             .multiply(BigDecimal.valueOf(value.creditsDto().getCoinsAmount()))));
