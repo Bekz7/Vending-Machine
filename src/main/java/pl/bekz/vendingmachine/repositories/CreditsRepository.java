@@ -9,5 +9,5 @@ public interface CreditsRepository extends Repository<Credit, String>, GenericRe
 
   void deleteAll();
 
-  Map<String, Credit> getCredits();
+  Map<String, Credit> findAll();
 }

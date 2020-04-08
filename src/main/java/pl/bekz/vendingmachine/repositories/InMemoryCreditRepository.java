@@ -33,7 +33,7 @@ public class InMemoryCreditRepository implements CreditsRepository {
   }
 
   @Override
-  public Map<String, Credit> getCredits() {
+  public Map<String, Credit> findAll() {
     return this.map;
   }
 

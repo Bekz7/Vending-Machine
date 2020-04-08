@@ -72,8 +72,7 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   }
 
   private List<CreditDto> getListCoinsToReturn(BigDecimal balanceToCheck) {
-    return creditsRepository.getCredits().values().stream()
-        .map(Credit::creditsDto)
+    return getDtoCredits().values().stream()
         .filter(creditDto -> creditDto.getCoinsAmount() > 0)
         .filter(creditDto -> creditDto.getCoinValue().compareTo(balanceToCheck) <= 0)
         .collect(Collectors.toList());
@@ -122,25 +121,23 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
     transaction.setCustomerBalance(restAfterTransaction);
   }
 
-  private Map<String, CreditDto> getCredits() {
-    Map<String, CreditDto> map = new ConcurrentHashMap<>();
-    creditsRepository.getCredits().entrySet().stream().map(c -> map.put(c.getKey(), c.getValue().creditsDto()));
-    return map;
-  }
-
   public BigDecimal checkMachineCoinBalance() {
     BigDecimal[] machineBalance = {BigDecimal.ZERO};
-    creditsRepository
-            .getCredits()
+    getDtoCredits()
             .forEach(
                     (key, value) ->
                             machineBalance[0] =
                                     machineBalance[0].add(
                                             value
-                            .creditsDto()
                             .getCoinValue()
-                            .multiply(BigDecimal.valueOf(value.creditsDto().getCoinsAmount()))));
+                            .multiply(BigDecimal.valueOf(value.getCoinsAmount()))));
     return machineBalance[0];
+  }
+
+  private Map<String, CreditDto> getDtoCredits(){
+    Map<String, CreditDto> ret = new ConcurrentHashMap<>();
+    creditsRepository.findAll().forEach((key, value) -> ret.put(key, value.creditsDto()));
+    return ret;
   }
 
   public BigDecimal resetCustomerBalance() {
