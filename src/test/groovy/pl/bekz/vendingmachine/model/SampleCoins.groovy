@@ -1,7 +1,6 @@
 package pl.bekz.vendingmachine.model
 
 import groovy.transform.CompileStatic
-import pl.bekz.vendingmachine.model.Money
 import pl.bekz.vendingmachine.model.dto.CreditDto
 
 @CompileStatic
@@ -13,9 +12,9 @@ trait SampleCoins {
 
     private static CreditDto createCoin(Money money, int amount) {
         return CreditDto.builder()
-                .coinName(money.name())
-                .coinsAmount(amount)
-                .coinValue(money.value)
+                .name(money.name())
+                .amount(amount)
+                .value(money.value)
                 .build()
     }
 }

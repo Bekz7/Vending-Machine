@@ -23,7 +23,7 @@ public class VendorController {
 
     @PutMapping("/vendor/refill/{productName}")
     public ResponseEntity<ProductDto> refill(@PathVariable String productName){
-        return new ResponseEntity<>(service.increaseProductAmount(productName), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(service.increaseProductAmount(productName.toUpperCase()), HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/vendor/balance")

@@ -15,6 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static pl.bekz.vendingmachine.ProductFactory.cocaCola
 import static pl.bekz.vendingmachine.ProductFactory.pepsi
 import static pl.bekz.vendingmachine.ProductFactory.redbull
+import static pl.bekz.vendingmachine.model.Drinks.COCA_COLA
+import static pl.bekz.vendingmachine.model.Drinks.PEPSI
+import static pl.bekz.vendingmachine.model.Drinks.REDBULL
 
 class AcceptanceSpec extends IntegrationSpec implements SampleProducts, SampleCoins {
     @Autowired
@@ -27,12 +30,12 @@ class AcceptanceSpec extends IntegrationSpec implements SampleProducts, SampleCo
     }
 
     private void supplyMachine(ProductDto... products){
-        products.each { ProductDto product -> facade.add(product)
+        products.each { ProductDto product -> productFacade.add(product)
         }
     }
 
     def "positive buying scenario"(){
-        given: 'inventory has the three drinks "Coca-cola", "Pepsi" and "Redbull"'
+        given:
             supplyMachine(cocaColaSamples, pepsiSamples, redbulSamples)
         when: 'I go to /products'
             ResultActions getDrinks = mockMvc.perform(get("/products"))
@@ -41,9 +44,9 @@ class AcceptanceSpec extends IntegrationSpec implements SampleProducts, SampleCo
                 .andExpect(content().json("""
                 {
                     "content": [
-                        {"name":"$cocaCola.name","amount":"$cocaCola.amount","price":"$cocaCola.price"},
-                        {"name":"$pepsi.name","amount":"$pepsi.amount","price":"$pepsi.price"},
-                        {"name":"$redbull.name","amount":"$redbull.amount","price":"$redbull.price"}
+                        {"name":"$cocaColaSamples.name","amount":"$cocaColaSamples.amount","price":"$cocaColaSamples.price"},
+                        {"name":"$pepsiSamples.name","amount":"$pepsiSamples.amount","price":"$pepsiSamples.price"},
+                        {"name":"$redbulSamples.name","amount":"$redbulSamples.amount","price":"$redbulSamples.price"}
                     ]
                 }"""))
     }

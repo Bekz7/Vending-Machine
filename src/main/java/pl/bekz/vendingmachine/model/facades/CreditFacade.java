@@ -11,8 +11,6 @@ import pl.bekz.vendingmachine.repositories.CreditsRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -48,10 +46,10 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   public CreditDto changeAmount(String name, int amount) {
     requireNonNull(name);
     Credit credit = creditsRepository.findOneOrThrow(name);
-    final int amountToChange = credit.creditsDto().getCoinsAmount() + amount;
-    final BigDecimal coinValue = credit.creditsDto().getCoinValue();
+    final int amountToChange = credit.creditsDto().getAmount() + amount;
+    final BigDecimal coinValue = credit.creditsDto().getValue();
     credit =
-        Credit.builder().coinName(name).coinAmount(amountToChange).coinsValue(coinValue).build();
+        Credit.builder().name(name).amount(amountToChange).value(coinValue).build();
     return credit.creditsDto();
   }
 
@@ -67,15 +65,16 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
 
   private CreditDto decreesCredit(CreditDto dto) {
     requireNonNull(dto);
-    final int coinToDecrees = -dto.getCoinsAmount();
-    return changeAmount(dto.getCoinName(), coinToDecrees);
+    final int coinToDecrees = -dto.getAmount();
+    return changeAmount(dto.getName(), coinToDecrees);
   }
 
   private List<CreditDto> getListCoinsToReturn(BigDecimal balanceToCheck) {
-    return getDtoCredits().values().stream()
-        .filter(creditDto -> creditDto.getCoinsAmount() > 0)
-        .filter(creditDto -> creditDto.getCoinValue().compareTo(balanceToCheck) <= 0)
-        .collect(Collectors.toList());
+    return creditsRepository.findAll().values().stream()
+            .map(Credit::creditsDto)
+            .filter(creditDto -> creditDto.getAmount() > 0)
+            .filter(creditDto -> creditDto.getValue().compareTo(balanceToCheck) <= 0)
+            .collect(Collectors.toList());
   }
 
   public void checkIfCoinEnough(BigDecimal productCost) {
@@ -99,7 +98,7 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   private boolean exactChangeOnly(BigDecimal balanceToCheck) {
     final List<BigDecimal> allCoinsByValue =
         getListCoinsToReturn(balanceToCheck).stream()
-            .map(CreditDto::getCoinValue)
+            .map(CreditDto::getValue)
             .collect(Collectors.toList());
     BigDecimal coinsValue = allCoinsByValue.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
     return coinsValue.compareTo(balanceToCheck) != 0;
@@ -123,21 +122,17 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
 
   public BigDecimal checkMachineCoinBalance() {
     BigDecimal[] machineBalance = {BigDecimal.ZERO};
-    getDtoCredits()
+    creditsRepository
+            .findAll()
             .forEach(
                     (key, value) ->
                             machineBalance[0] =
                                     machineBalance[0].add(
                                             value
-                            .getCoinValue()
-                            .multiply(BigDecimal.valueOf(value.getCoinsAmount()))));
+                                                    .creditsDto()
+                                                    .getValue()
+                                                    .multiply(BigDecimal.valueOf(value.creditsDto().getAmount()))));
     return machineBalance[0];
-  }
-
-  private Map<String, CreditDto> getDtoCredits(){
-    Map<String, CreditDto> ret = new ConcurrentHashMap<>();
-    creditsRepository.findAll().forEach((key, value) -> ret.put(key, value.creditsDto()));
-    return ret;
   }
 
   public BigDecimal resetCustomerBalance() {

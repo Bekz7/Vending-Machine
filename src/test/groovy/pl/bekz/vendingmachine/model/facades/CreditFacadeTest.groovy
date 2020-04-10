@@ -48,10 +48,10 @@ class CreditFacadeTest extends Specification implements SampleCoins {
             final coinAmountToChange = -2
         when:
             def coinsWithChangedAmount = creditFacade
-                    .changeAmount(dimeSamples.coinName, coinAmountToChange)
+                    .changeAmount(dimeSamples.name, coinAmountToChange)
             creditFacade.add(coinsWithChangedAmount)
         then:
-            creditFacade.show(dimeSamples.coinName).coinsAmount == dimeSamples.coinsAmount +
+            creditFacade.show(dimeSamples.name).amount == dimeSamples.amount +
                     coinAmountToChange
     }
 

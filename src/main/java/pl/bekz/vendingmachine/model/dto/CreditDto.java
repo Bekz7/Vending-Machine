@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Getter
 @EqualsAndHashCode
 public class CreditDto {
-    private String coinName;
-    private BigDecimal coinValue;
-    private Integer coinsAmount;
+    private String name;
+    private BigDecimal value;
+    private Integer amount;
 }

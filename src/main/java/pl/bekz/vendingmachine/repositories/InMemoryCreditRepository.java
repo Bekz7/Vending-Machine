@@ -23,7 +23,7 @@ public class InMemoryCreditRepository implements CreditsRepository {
   @Override
   public Credit save(Credit credit) {
     requireNonNull(credit);
-    map.put(credit.creditsDto().getCoinName(), credit);
+    map.put(credit.creditsDto().getName(), credit);
     return credit;
   }
 

@@ -8,6 +8,6 @@ import static pl.bekz.vendingmachine.ProductFactory.*
 @CompileStatic
 trait SampleProducts {
         ProductDto pepsiSamples = pepsi(3).productDto()
-        ProductDto cocaColaSamples = cocaCola(5).productDto()
-        ProductDto redbulSamples = redbull(8).productDto()
+        ProductDto cocaColaSamples = cocaCola(2).productDto()
+        ProductDto redbulSamples = redbull(0).productDto()
 }

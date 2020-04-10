@@ -9,9 +9,9 @@ public class CreditCreator {
     public Credit from(CreditDto creditDto){
         requireNonNull(creditDto);
         return Credit.builder()
-                .coinName(creditDto.getCoinName())
-                .coinsValue(creditDto.getCoinValue())
-                .coinAmount(creditDto.getCoinsAmount())
+                .name(creditDto.getName())
+                .value(creditDto.getValue())
+                .amount(creditDto.getAmount())
                 .build();
     }
 }

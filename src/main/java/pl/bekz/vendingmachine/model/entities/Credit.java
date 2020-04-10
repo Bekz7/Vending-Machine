@@ -20,17 +20,17 @@ public class Credit {
 
     @Id
     @Column(unique = true, nullable = false)
-    private String coinName;
+    private String name;
     @Column(nullable = false)
-    private BigDecimal coinsValue;
+    private BigDecimal value;
     @Column(nullable = false)
-    private Integer coinAmount;
+    private Integer amount;
 
     public CreditDto creditsDto(){
         return CreditDto.builder()
-                .coinName(coinName)
-                .coinValue(coinsValue)
-                .coinsAmount(coinAmount)
+                .name(name)
+                .value(value)
+                .amount(amount)
                 .build();
     }
 }

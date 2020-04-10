@@ -48,7 +48,9 @@ public class ProductFacade implements VendingMachineFacade<ProductDto> {
 
     public Page<ProductDto> findAllProducts(Pageable pageable) {
         requireNonNull(pageable);
-        return productRepository.findAll(pageable).map(Product::productDto);
+        return productRepository
+                .findAll(pageable)
+                .map(Product::productDto);
     }
 
     public void checkIsProductAvailable(String productId) {
