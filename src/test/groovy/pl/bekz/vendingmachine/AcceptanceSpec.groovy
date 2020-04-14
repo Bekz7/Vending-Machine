@@ -18,36 +18,36 @@ import static pl.bekz.vendingmachine.ProductFactory.redbull
 import static pl.bekz.vendingmachine.model.Drinks.COCA_COLA
 import static pl.bekz.vendingmachine.model.Drinks.PEPSI
 import static pl.bekz.vendingmachine.model.Drinks.REDBULL
-
-class AcceptanceSpec extends IntegrationSpec implements SampleProducts, SampleCoins {
-    @Autowired
-    ProductFacade productFacade
-    @Autowired
-    CreditFacade creditFacade
-
-    private void addCreditsToCustomer(Money... coins){
-        coins.each {Money coin -> creditFacade.increaseCustomerBalance(coin)}
-    }
-
-    private void supplyMachine(ProductDto... products){
-        products.each { ProductDto product -> productFacade.add(product)
-        }
-    }
-
-    def "positive buying scenario"(){
-        given:
-            supplyMachine(cocaColaSamples, pepsiSamples, redbulSamples)
-        when: 'I go to /products'
-            ResultActions getDrinks = mockMvc.perform(get("/products"))
-        then: 'I can see all drinks'
-            getDrinks.andExpect(status().isOk())
-                .andExpect(content().json("""
-                {
-                    "content": [
-                        {"name":"$cocaColaSamples.name","amount":"$cocaColaSamples.amount","price":"$cocaColaSamples.price"},
-                        {"name":"$pepsiSamples.name","amount":"$pepsiSamples.amount","price":"$pepsiSamples.price"},
-                        {"name":"$redbulSamples.name","amount":"$redbulSamples.amount","price":"$redbulSamples.price"}
-                    ]
-                }"""))
-    }
-}
+//
+//class AcceptanceSpec extends IntegrationSpec implements SampleProducts, SampleCoins {
+//    @Autowired
+//    ProductFacade productFacade
+//    @Autowired
+//    CreditFacade creditFacade
+//
+//    private void addCreditsToCustomer(Money... coins){
+//        coins.each {Money coin -> creditFacade.increaseCustomerBalance(coin)}
+//    }
+//
+//    private void supplyMachine(ProductDto... products){
+//        products.each { ProductDto product -> productFacade.add(product)
+//        }
+//    }
+//
+//    def "positive buying scenario"(){
+//        given:
+//            supplyMachine(cocaColaSamples, pepsiSamples, redbulSamples)
+//        when: 'I go to /products'
+//            ResultActions getDrinks = mockMvc.perform(get("/products"))
+//        then: 'I can see all drinks'
+//            getDrinks.andExpect(status().isOk())
+//                .andExpect(content().json("""
+//                {
+//                    "content": [
+//                        {"name":"$cocaColaSamples.name","amount":"$cocaColaSamples.amount","price":"$cocaColaSamples.price"},
+//                        {"name":"$pepsiSamples.name","amount":"$pepsiSamples.amount","price":"$pepsiSamples.price"},
+//                        {"name":"$redbulSamples.name","amount":"$redbulSamples.amount","price":"$redbulSamples.price"}
+//                    ]
+//                }"""))
+//    }
+//}

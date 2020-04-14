@@ -41,6 +41,7 @@ public class CustomerService {
 
   public String buyProduct(String productName) {
     requireNonNull(productName);
+    productName = productName.toUpperCase();
     final BigDecimal selectedProductPrice = productPrice(productName);
 
     productFacade.checkIsProductAvailable(productName);
@@ -63,7 +64,7 @@ public class CustomerService {
   }
 
   private CreditDto increaseCoinAmount(String coin) {
-    return creditFacade.changeAmount(coin, 1);
+    return creditFacade.changeAmount(coin.toUpperCase(), 1);
   }
 
   public BigDecimal customerBalance() {

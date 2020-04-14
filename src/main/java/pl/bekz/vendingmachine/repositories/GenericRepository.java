@@ -11,6 +11,11 @@ public interface GenericRepository<T> {
     T findById(String name);
 
     default T findOneOrThrow(String name) {
-        return Optional.ofNullable(findById(name)).orElseThrow(() -> new ItemNotFound(name));
+        T t = findById(name);
+        if (t == null){
+            throw new ItemNotFound(name);
+        }
+        return t;
+//        return Optional.ofNullable(findById(name)).orElseThrow(() -> new ItemNotFound(name));
     }
 }

@@ -2,6 +2,7 @@ package pl.bekz.vendingmachine.model.facades
 
 
 import org.springframework.data.domain.PageRequest
+import pl.bekz.vendingmachine.exceptions.ItemNotFound
 import pl.bekz.vendingmachine.exceptions.ProductSoldOut
 import pl.bekz.vendingmachine.model.SampleProducts
 import pl.bekz.vendingmachine.model.VendingMachineConfiguration
@@ -55,5 +56,12 @@ class ProductFacadeTest extends Specification implements SampleProducts {
             facade.checkIsProductAvailable(REDBULL.name())
         then:
             thrown(ProductSoldOut)
+    }
+
+    def "AS a Customer I want to be inform that I pass choose wrong product"(){
+        when:
+            facade.show("asd")
+        then:
+            thrown(ItemNotFound)
     }
 }
