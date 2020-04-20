@@ -7,8 +7,6 @@ import pl.bekz.vendingmachine.model.SampleCoins
 import pl.bekz.vendingmachine.model.VendingMachineConfiguration
 import spock.lang.Specification
 
-import java.util.stream.Stream
-
 import static pl.bekz.vendingmachine.model.Money.DIME
 import static pl.bekz.vendingmachine.model.Money.DOLLAR
 
@@ -21,8 +19,7 @@ class CreditFacadeTest extends Specification implements SampleCoins {
     }
 
     private void addCreditsToCustomer(Money... coins){
-        Stream.of(coins)
-                .forEach({ coin -> creditFacade.increaseCustomerBalance(coin as Money) })
+        coins.each {coin -> creditFacade.increaseCustomerBalance(coin)}
     }
 
     def "As a Machine I want spend the rest to the Customer"(){
