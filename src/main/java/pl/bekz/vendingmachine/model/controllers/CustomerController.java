@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.bekz.vendingmachine.model.dto.ProductDto;
 import pl.bekz.vendingmachine.model.services.CustomerService;
 
+import static java.util.Objects.requireNonNull;
 import java.math.BigDecimal;
 
 @RestController
 public class CustomerController {
     private final CustomerService service;
+    private final ResponseBody responseBody = new ResponseBody();
 
     @Autowired
     public CustomerController(CustomerService service) {
@@ -24,29 +26,32 @@ public class CustomerController {
 
     @PutMapping("/insert/{coinName}")
     public ResponseEntity<BigDecimal> insertCoin(@PathVariable String coinName) {
+        requireNonNull(coinName);
+
         service.insertCoin(coinName);
-        final BigDecimal credit = service.customerBalance();
-        return new ResponseEntity<>(credit, HttpStatus.ACCEPTED);
+        return responseBody.with(service.customerBalance(), HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/products")
     public ResponseEntity<Page<ProductDto>> getProducts() {
-        return new ResponseEntity<>(service.showAllAvailableProduct(), HttpStatus.OK);
+        return responseBody.withOkStatus(service.showAllAvailableProduct());
     }
 
     @GetMapping("/buy/{productName}")
     public ResponseEntity<String> buyProduct(@PathVariable String productName) {
-        return new ResponseEntity<>(service.buyProduct(productName), HttpStatus.OK);
+        requireNonNull(productName);
+
+        return responseBody.withOkStatus(service.buyProduct(productName));
     }
 
     @GetMapping("/refund")
     public ResponseEntity<BigDecimal> getMoneyBack() {
-        return new ResponseEntity<>(service.reimburseMoneyToTheCustomer(), HttpStatus.OK);
+        return responseBody.withOkStatus(service.reimburseMoneyToTheCustomer());
     }
 
     @GetMapping("/balance")
     public ResponseEntity<BigDecimal> checkMyBalance() {
-        return new ResponseEntity<>(service.customerBalance(), HttpStatus.OK);
+       return responseBody.withOkStatus(service.customerBalance());
     }
 
 

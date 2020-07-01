@@ -5,6 +5,7 @@ import org.junit.Before
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.Rollback
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
@@ -13,6 +14,7 @@ import spock.lang.Specification
 
 @TypeChecked
 @SpringBootTest(classes =  [VendingMachineApplication])
+@ActiveProfiles([Profiles.TEST])
 @Transactional
 @Rollback
 abstract class IntegrationSpec extends Specification {
