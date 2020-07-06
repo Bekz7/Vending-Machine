@@ -3,7 +3,7 @@ package pl.bekz.vendingmachine.model
 import groovy.transform.CompileStatic
 import pl.bekz.vendingmachine.model.dto.ProductDto
 
-import static pl.bekz.vendingmachine.ProductFactory.*
+import static pl.bekz.vendingmachine.infrastructure.ProductFactory.*
 
 @CompileStatic
 trait SampleProducts {

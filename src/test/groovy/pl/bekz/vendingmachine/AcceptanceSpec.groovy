@@ -2,22 +2,16 @@ package pl.bekz.vendingmachine
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.ResultActions
-import pl.bekz.vendingmachine.model.Money
+import pl.bekz.vendingmachine.machine.domain.Money
 import pl.bekz.vendingmachine.model.SampleCoins
 import pl.bekz.vendingmachine.model.SampleProducts
 import pl.bekz.vendingmachine.model.dto.ProductDto
-import pl.bekz.vendingmachine.model.facades.CreditFacade
-import pl.bekz.vendingmachine.model.facades.ProductFacade
+import pl.bekz.vendingmachine.machine.facades.CreditFacade
+import pl.bekz.vendingmachine.machine.facades.ProductFacade
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import static pl.bekz.vendingmachine.ProductFactory.cocaCola
-import static pl.bekz.vendingmachine.ProductFactory.pepsi
-import static pl.bekz.vendingmachine.ProductFactory.redbull
-import static pl.bekz.vendingmachine.model.Drinks.COCA_COLA
-import static pl.bekz.vendingmachine.model.Drinks.PEPSI
-import static pl.bekz.vendingmachine.model.Drinks.REDBULL
 
 class AcceptanceSpec extends IntegrationSpec implements SampleProducts, SampleCoins {
     @Autowired

@@ -1,6 +1,7 @@
 package pl.bekz.vendingmachine.model
 
 import groovy.transform.CompileStatic
+import pl.bekz.vendingmachine.machine.domain.Money
 import pl.bekz.vendingmachine.model.dto.CreditDto
 
 @CompileStatic

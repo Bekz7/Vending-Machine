@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import pl.bekz.vendingmachine.infrastructure.Profiles
 import spock.lang.Specification
 
 @TypeChecked

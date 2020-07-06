@@ -1,15 +1,16 @@
 package pl.bekz.vendingmachine.model.services
 
-import pl.bekz.vendingmachine.exceptions.CreditNotFound
-import pl.bekz.vendingmachine.exceptions.ExactChangeOnly
-import pl.bekz.vendingmachine.exceptions.NotEnoughCoins
-import pl.bekz.vendingmachine.exceptions.ProductSoldOut
-import pl.bekz.vendingmachine.model.Money
-import pl.bekz.vendingmachine.model.VendingMachineConfiguration
+import pl.bekz.vendingmachine.infrastructure.exceptions.CreditNotFound
+import pl.bekz.vendingmachine.infrastructure.exceptions.ExactChangeOnly
+import pl.bekz.vendingmachine.infrastructure.exceptions.NotEnoughCoins
+import pl.bekz.vendingmachine.infrastructure.exceptions.ProductSoldOut
+import pl.bekz.vendingmachine.infrastructure.services.CustomerService
+import pl.bekz.vendingmachine.machine.domain.Money
+import pl.bekz.vendingmachine.machine.domain.VendingMachineConfiguration
 import spock.lang.Specification
 
-import static pl.bekz.vendingmachine.model.Money.*
-import static pl.bekz.vendingmachine.model.Drinks.*
+import static pl.bekz.vendingmachine.machine.domain.Money.*
+import static pl.bekz.vendingmachine.machine.domain.Drinks.*
 
 class CustomerServiceTest extends Specification {
     private CustomerService service

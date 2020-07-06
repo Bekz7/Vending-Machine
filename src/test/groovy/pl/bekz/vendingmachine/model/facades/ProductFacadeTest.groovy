@@ -2,15 +2,16 @@ package pl.bekz.vendingmachine.model.facades
 
 
 import org.springframework.data.domain.PageRequest
-import pl.bekz.vendingmachine.exceptions.ItemNotFound
-import pl.bekz.vendingmachine.exceptions.ProductSoldOut
+import pl.bekz.vendingmachine.infrastructure.exceptions.ItemNotFound
+import pl.bekz.vendingmachine.infrastructure.exceptions.ProductSoldOut
+import pl.bekz.vendingmachine.machine.facades.ProductFacade
 import pl.bekz.vendingmachine.model.SampleProducts
-import pl.bekz.vendingmachine.model.VendingMachineConfiguration
+import pl.bekz.vendingmachine.machine.domain.VendingMachineConfiguration
 import pl.bekz.vendingmachine.model.dto.ProductDto
 import spock.lang.Specification
 
-import static pl.bekz.vendingmachine.model.Drinks.PEPSI
-import static pl.bekz.vendingmachine.model.Drinks.REDBULL
+import static pl.bekz.vendingmachine.machine.domain.Drinks.PEPSI
+import static pl.bekz.vendingmachine.machine.domain.Drinks.REDBULL
 
 class ProductFacadeTest extends Specification implements SampleProducts {
     ProductFacade facade
