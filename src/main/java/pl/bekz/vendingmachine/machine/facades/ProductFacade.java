@@ -3,10 +3,12 @@ package pl.bekz.vendingmachine.machine.facades;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import pl.bekz.vendingmachine.infrastructure.exceptions.ProductSoldOut;
-import pl.bekz.vendingmachine.machine.domain.ProductCreator;
-import pl.bekz.vendingmachine.machine.dto.ProductDto;
-import pl.bekz.vendingmachine.machine.domain.entities.Product;
 import pl.bekz.vendingmachine.infrastructure.repositories.ProductRepository;
+import pl.bekz.vendingmachine.machine.domain.ProductCreator;
+import pl.bekz.vendingmachine.machine.domain.entities.Product;
+import pl.bekz.vendingmachine.machine.dto.ProductDto;
+
+import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
 
@@ -52,6 +54,8 @@ public class ProductFacade implements VendingMachineFacade<ProductDto> {
                 .findAll(pageable)
                 .map(Product::productDto);
     }
+
+    Predicate<Integer> productAvailable = productAmount -> productAmount > 0;
 
     public void checkIsProductAvailable(String productId) {
         if (!isProductInStock(productId)) {

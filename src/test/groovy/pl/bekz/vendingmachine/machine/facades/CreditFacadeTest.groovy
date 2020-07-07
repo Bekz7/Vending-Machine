@@ -1,11 +1,10 @@
-package pl.bekz.vendingmachine.model.facades
+package pl.bekz.vendingmachine.machine.facades
 
 import pl.bekz.vendingmachine.infrastructure.exceptions.ExactChangeOnly
 import pl.bekz.vendingmachine.infrastructure.exceptions.NotEnoughCoins
 import pl.bekz.vendingmachine.machine.domain.Money
-import pl.bekz.vendingmachine.machine.facades.CreditFacade
-import pl.bekz.vendingmachine.model.SampleCoins
 import pl.bekz.vendingmachine.machine.domain.VendingMachineConfiguration
+import pl.bekz.vendingmachine.infrastructure.SampleCoins
 import spock.lang.Specification
 
 import static pl.bekz.vendingmachine.machine.domain.Money.DIME

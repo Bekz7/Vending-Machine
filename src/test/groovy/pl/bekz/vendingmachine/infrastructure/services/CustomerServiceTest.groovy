@@ -1,10 +1,9 @@
-package pl.bekz.vendingmachine.model.services
+package pl.bekz.vendingmachine.infrastructure.services
 
 import pl.bekz.vendingmachine.infrastructure.exceptions.CreditNotFound
 import pl.bekz.vendingmachine.infrastructure.exceptions.ExactChangeOnly
 import pl.bekz.vendingmachine.infrastructure.exceptions.NotEnoughCoins
 import pl.bekz.vendingmachine.infrastructure.exceptions.ProductSoldOut
-import pl.bekz.vendingmachine.infrastructure.services.CustomerService
 import pl.bekz.vendingmachine.machine.domain.Money
 import pl.bekz.vendingmachine.machine.domain.VendingMachineConfiguration
 import spock.lang.Specification

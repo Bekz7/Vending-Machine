@@ -3,8 +3,8 @@ package pl.bekz.vendingmachine
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.ResultActions
 import pl.bekz.vendingmachine.machine.domain.Money
-import pl.bekz.vendingmachine.model.SampleCoins
-import pl.bekz.vendingmachine.model.SampleProducts
+import pl.bekz.vendingmachine.infrastructure.SampleCoins
+import pl.bekz.vendingmachine.infrastructure.SampleProducts
 import pl.bekz.vendingmachine.model.dto.ProductDto
 import pl.bekz.vendingmachine.machine.facades.CreditFacade
 import pl.bekz.vendingmachine.machine.facades.ProductFacade

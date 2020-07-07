@@ -38,7 +38,7 @@ public class CustomerController {
     }
 
     @GetMapping("/buy/{productName}")
-    public ResponseEntity<String> buyProduct(@PathVariable String productName) {
+    public ResponseEntity<Boolean> buyProduct(@PathVariable String productName) {
         requireNonNull(productName);
 
         return responseBody.withOkStatus(service.buyProduct(productName));

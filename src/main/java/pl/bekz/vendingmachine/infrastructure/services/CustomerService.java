@@ -39,8 +39,7 @@ public class CustomerService {
     return productFacade.findAllProducts(PageRequest.of(0, 10));
   }
 
-  public String buyProduct(String productName) {
-    requireNonNull(productName);
+  public Boolean buyProduct(String productName) {
     productName = productName.toUpperCase();
     final BigDecimal selectedProductPrice = productPrice(productName);
 
@@ -52,7 +51,7 @@ public class CustomerService {
     creditFacade.decreesCustomerBalance(selectedProductPrice);
     creditFacade.decreesMachineBalance();
     reimburseMoneyToTheCustomer();
-    return productName;
+    return true;
   }
 
   public BigDecimal reimburseMoneyToTheCustomer() {

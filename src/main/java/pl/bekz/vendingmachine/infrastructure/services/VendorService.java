@@ -20,7 +20,6 @@ public class VendorService {
   }
 
   public ProductDto increaseProductAmount(String productName) {
-    requireNonNull(productName);
     return productFacade.add(increaseAmount(productName));
   }
 
