@@ -7,8 +7,6 @@ import pl.bekz.vendingmachine.machine.facades.ProductFacade;
 
 import java.math.BigDecimal;
 
-import static java.util.Objects.requireNonNull;
-
 @Service
 public class VendorService {
   private CreditFacade creditFacade;

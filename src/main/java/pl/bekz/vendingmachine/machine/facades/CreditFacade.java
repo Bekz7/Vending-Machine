@@ -2,18 +2,17 @@ package pl.bekz.vendingmachine.machine.facades;
 
 import pl.bekz.vendingmachine.infrastructure.exceptions.ExactChangeOnly;
 import pl.bekz.vendingmachine.infrastructure.exceptions.NotEnoughCoins;
+import pl.bekz.vendingmachine.infrastructure.repositories.CreditsRepository;
 import pl.bekz.vendingmachine.machine.domain.CreditCreator;
 import pl.bekz.vendingmachine.machine.domain.Money;
-import pl.bekz.vendingmachine.machine.dto.CreditDto;
 import pl.bekz.vendingmachine.machine.domain.entities.Credit;
 import pl.bekz.vendingmachine.machine.domain.entities.Transaction;
-import pl.bekz.vendingmachine.infrastructure.repositories.CreditsRepository;
+import pl.bekz.vendingmachine.machine.dto.CreditDto;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.requireNonNull;
 
 public class CreditFacade implements VendingMachineFacade<CreditDto> {
   private CreditCreator creditCreator;
@@ -29,7 +28,6 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
 
   @Override
   public CreditDto add(CreditDto dto) {
-    requireNonNull(dto);
     Credit credit = creditCreator.from(dto);
     creditsRepository.save(credit);
     return credit.creditsDto();
@@ -37,14 +35,12 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
 
   @Override
   public CreditDto show(String dto) {
-    requireNonNull(dto);
     final Credit credit = creditsRepository.findOneOrThrow(dto);
     return credit.creditsDto();
   }
 
   @Override
   public CreditDto changeAmount(String name, int amount) {
-    requireNonNull(name);
     Credit credit = creditsRepository.findOneOrThrow(name);
     final int amountToChange = credit.creditsDto().getAmount() + amount;
     final BigDecimal coinValue = credit.creditsDto().getValue();
@@ -64,7 +60,6 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   }
 
   private CreditDto decreesCredit(CreditDto dto) {
-    requireNonNull(dto);
     final int coinToDecrees = -dto.getAmount();
     return changeAmount(dto.getName(), coinToDecrees);
   }
@@ -78,28 +73,39 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   }
 
   public void checkIfCoinEnough(BigDecimal productCost) {
-    requireNonNull(productCost);
     if (!haveEnoughCredit(productCost)) {
       throw new NotEnoughCoins();
     }
   }
+
+  public Predicate<BigDecimal> enoughCredit = productCost -> transaction.getCustomerBalance().compareTo(productCost) >= 0;
 
   private boolean haveEnoughCredit(BigDecimal productCost) {
     return transaction.getCustomerBalance().compareTo(productCost) >= 0;
   }
 
   public void checkIfExactChangeOnly(BigDecimal balanceToCheck) {
-    requireNonNull(balanceToCheck);
     if (exactChangeOnly(balanceToCheck)) {
       throw new ExactChangeOnly();
     }
   }
 
+  public Predicate<BigDecimal> exactChange = balanceToCheck -> {
+    List<BigDecimal> allCoinsByValue =
+            getListCoinsToReturn(balanceToCheck).stream()
+                    .map(CreditDto::getValue)
+                    .collect(Collectors.toList());
+
+    BigDecimal coinsValue = allCoinsByValue.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+    return coinsValue.compareTo(balanceToCheck) != 0;
+  };
+
   private boolean exactChangeOnly(BigDecimal balanceToCheck) {
     final List<BigDecimal> allCoinsByValue =
-        getListCoinsToReturn(balanceToCheck).stream()
-            .map(CreditDto::getValue)
-            .collect(Collectors.toList());
+            getListCoinsToReturn(balanceToCheck).stream()
+                    .map(CreditDto::getValue)
+                    .collect(Collectors.toList());
+
     BigDecimal coinsValue = allCoinsByValue.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
     return coinsValue.compareTo(balanceToCheck) != 0;
   }
@@ -109,13 +115,11 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   }
 
   public void increaseCustomerBalance(Money coin) {
-    requireNonNull(coin);
     final BigDecimal currentCustomerBalance = transaction.getCustomerBalance();
     transaction.setCustomerBalance(currentCustomerBalance.add(coin.getValue()));
   }
 
   public void decreesCustomerBalance(BigDecimal productPrice) {
-    requireNonNull(productPrice);
     final BigDecimal restAfterTransaction = checkCustomerBalance().subtract(productPrice);
     transaction.setCustomerBalance(restAfterTransaction);
   }

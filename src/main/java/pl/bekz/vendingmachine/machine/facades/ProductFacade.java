@@ -55,7 +55,7 @@ public class ProductFacade implements VendingMachineFacade<ProductDto> {
                 .map(Product::productDto);
     }
 
-    Predicate<Integer> productAvailable = productAmount -> productAmount > 0;
+    public Predicate<String> productAvailable = productName -> show(productName).getAmount() > 0;
 
     public void checkIsProductAvailable(String productId) {
         if (!isProductInStock(productId)) {

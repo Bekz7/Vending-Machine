@@ -4,6 +4,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import pl.bekz.vendingmachine.infrastructure.exceptions.CreditNotFound;
+import pl.bekz.vendingmachine.infrastructure.exceptions.ExactChangeOnly;
+import pl.bekz.vendingmachine.infrastructure.exceptions.NotEnoughCoins;
+import pl.bekz.vendingmachine.infrastructure.exceptions.ProductSoldOut;
 import pl.bekz.vendingmachine.machine.domain.Money;
 import pl.bekz.vendingmachine.machine.dto.CreditDto;
 import pl.bekz.vendingmachine.machine.dto.ProductDto;
@@ -11,8 +14,9 @@ import pl.bekz.vendingmachine.machine.facades.CreditFacade;
 import pl.bekz.vendingmachine.machine.facades.ProductFacade;
 
 import java.math.BigDecimal;
-
-import static java.util.Objects.requireNonNull;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
 
 @Service
 public class CustomerService {
@@ -43,15 +47,33 @@ public class CustomerService {
     productName = productName.toUpperCase();
     final BigDecimal selectedProductPrice = productPrice(productName);
 
-    productFacade.checkIsProductAvailable(productName);
-    creditFacade.checkIfCoinEnough(selectedProductPrice);
-    creditFacade.checkIfExactChangeOnly(customerBalance().subtract(selectedProductPrice));
+    conditionsToSold(productName).entrySet()
+            .stream()
+            .filter(conditionToCheck())
+            .map(Map.Entry::getKey)
+            .findFirst()
+            .ifPresent(ex -> System.out.println(ex.getMessage()));
 
     decreaseProductAmount(productName);
     creditFacade.decreesCustomerBalance(selectedProductPrice);
     creditFacade.decreesMachineBalance();
     reimburseMoneyToTheCustomer();
     return true;
+  }
+
+  private Predicate<Map.Entry<Exception, Boolean>> conditionToCheck() {
+    return entry -> entry.getValue().equals(true);
+  }
+
+  private Map<Exception, Boolean> conditionsToSold(String productName) {
+    Map<Exception, Boolean> conditions = new HashMap<>();
+    final BigDecimal selectedProductPrice = productPrice(productName);
+
+    conditions.put(new ProductSoldOut(productName), productFacade.productAvailable.negate().test(productName));
+    conditions.put(new NotEnoughCoins(), creditFacade.enoughCredit.negate().test(selectedProductPrice));
+    conditions.put(new ExactChangeOnly(), creditFacade.exactChange.test(customerBalance().subtract(selectedProductPrice)));
+
+    return conditions;
   }
 
   public BigDecimal reimburseMoneyToTheCustomer() {
