@@ -1,4 +1,4 @@
-CREATE SCHEMA vending_machine;
+-- CREATE SCHEMA vending_machine;
 
 CREATE TABLE IF NOT EXISTS CREDIT (
     name VARCHAR(30) PRIMARY KEY,

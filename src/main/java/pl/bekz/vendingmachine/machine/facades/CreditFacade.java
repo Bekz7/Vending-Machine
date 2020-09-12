@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CreditFacade implements VendingMachineFacade<CreditDto> {
   private CreditCreator creditCreator;
@@ -65,7 +66,7 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   }
 
   private List<CreditDto> getListCoinsToReturn(BigDecimal balanceToCheck) {
-    return creditsRepository.findAll().values().stream()
+    return creditsRepository.findAll().stream()
             .map(Credit::creditsDto)
             .filter(creditDto -> creditDto.getAmount() > 0)
             .filter(creditDto -> creditDto.getValue().compareTo(balanceToCheck) <= 0)
@@ -124,19 +125,12 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
     transaction.setCustomerBalance(restAfterTransaction);
   }
 
-  public BigDecimal checkMachineCoinBalance() {
-    BigDecimal[] machineBalance = {BigDecimal.ZERO};
-    creditsRepository
-            .findAll()
-            .forEach(
-                    (key, value) ->
-                            machineBalance[0] =
-                                    machineBalance[0].add(
-                                            value
-                                                    .creditsDto()
-                                                    .getValue()
-                                                    .multiply(BigDecimal.valueOf(value.creditsDto().getAmount()))));
-    return machineBalance[0];
+  public BigDecimal checkMachineCoinBalance(){
+    return  creditsRepository.findAll()
+            .stream()
+            .map(Credit::creditsDto)
+            .flatMap(creditDto -> Stream.of(creditDto.getValue(), BigDecimal.valueOf(creditDto.getAmount())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
   public BigDecimal resetCustomerBalance() {

@@ -2,8 +2,12 @@ package pl.bekz.vendingmachine.infrastructure.repositories;
 
 import pl.bekz.vendingmachine.machine.domain.entities.Credit;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static pl.bekz.vendingmachine.infrastructure.CreditFactory.*;
@@ -33,8 +37,8 @@ public class InMemoryCreditRepository implements CreditsRepository {
   }
 
   @Override
-  public Map<String, Credit> findAll() {
-    return this.map;
+  public List<Credit> findAll() {
+    return new ArrayList<>(map.values());
   }
 
   @Override

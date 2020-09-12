@@ -44,7 +44,12 @@ public class ProductFacade implements VendingMachineFacade<ProductDto> {
         requireNonNull(name);
         Product product = productRepository.findOneOrThrow(name);
         final int amountToChange = product.productDto().getAmount() + amount;
-        product = Product.builder().name(name).amount(amountToChange).build();
+        product =
+                Product.builder()
+                        .name(name)
+                        .price(product.productDto().getPrice())
+                        .amount(amountToChange)
+                        .build();
         return product.productDto();
     }
 

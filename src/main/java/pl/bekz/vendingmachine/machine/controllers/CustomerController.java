@@ -53,6 +53,4 @@ public class CustomerController {
     public ResponseEntity<BigDecimal> checkMyBalance() {
        return responseBody.withOkStatus(service.customerBalance());
     }
-
-
 }
