@@ -126,11 +126,17 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   }
 
   public BigDecimal checkMachineCoinBalance(){
-    return  creditsRepository.findAll()
-            .stream()
-            .map(Credit::creditsDto)
-            .flatMap(creditDto -> Stream.of(creditDto.getValue(), BigDecimal.valueOf(creditDto.getAmount())))
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    return creditsRepository.findAll().stream()
+        .map(Credit::creditsDto)
+        .filter(s -> s.getAmount() > 0)
+        .flatMap(
+            creditDto ->
+                Stream.of(coinsValueByType(creditDto)))
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+  private static BigDecimal coinsValueByType(CreditDto creditDto) {
+    return creditDto.getValue().multiply(BigDecimal.valueOf(creditDto.getAmount()));
   }
 
   public BigDecimal resetCustomerBalance() {

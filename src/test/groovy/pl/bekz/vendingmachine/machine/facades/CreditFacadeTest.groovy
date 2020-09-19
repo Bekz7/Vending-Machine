@@ -1,10 +1,10 @@
 package pl.bekz.vendingmachine.machine.facades
 
+import pl.bekz.vendingmachine.infrastructure.SampleCoins
 import pl.bekz.vendingmachine.infrastructure.exceptions.ExactChangeOnly
 import pl.bekz.vendingmachine.infrastructure.exceptions.NotEnoughCoins
 import pl.bekz.vendingmachine.machine.domain.Money
 import pl.bekz.vendingmachine.machine.domain.VendingMachineConfiguration
-import pl.bekz.vendingmachine.infrastructure.SampleCoins
 import spock.lang.Specification
 
 import static pl.bekz.vendingmachine.machine.domain.Money.DIME
@@ -58,8 +58,9 @@ class CreditFacadeTest extends Specification implements SampleCoins {
     def "As a Vendor I want check the Machine balance"(){
         when:
             creditFacade.add(dollarSamples)
+            creditFacade.add(dimeSamples)
         then:
-        2.0 == creditFacade.checkMachineCoinBalance()
+            2.4 == creditFacade.checkMachineCoinBalance()
     }
 
     def "As a Customer I want to be inform of the exact change only"(){

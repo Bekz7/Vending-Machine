@@ -36,12 +36,11 @@ class AcceptanceSpec extends IntegrationSpec implements SampleProducts, SampleCo
         then: 'I can see all drinks'
             getDrinks.andExpect(status().isOk())
                 .andExpect(content().json("""
-                {
-                    "content": [
+                {"content":[
                         {"name":"$cocaColaSamples.name","amount":"$cocaColaSamples.amount","price":"$cocaColaSamples.price"},
                         {"name":"$pepsiSamples.name","amount":"$pepsiSamples.amount","price":"$pepsiSamples.price"},
                         {"name":"$redbulSamples.name","amount":"$redbulSamples.amount","price":"$redbulSamples.price"}
-                    ]
-                }"""))
+                    ],
+                """))
     }
 }
