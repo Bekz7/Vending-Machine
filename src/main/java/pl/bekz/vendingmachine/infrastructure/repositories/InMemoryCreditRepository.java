@@ -18,10 +18,10 @@ public class InMemoryCreditRepository implements CreditsRepository {
   private Map<String, Credit> map = new ConcurrentHashMap<>();
 
   public InMemoryCreditRepository() {
-    map.put(DOLLAR.toString(), dollar());
-    map.put(QUARTER.toString(), quarter());
-    map.put(DIME.toString(), dime());
-    map.put(NICKEL.toString(), nickel());
+    map.put(DOLLAR.toString(), dollar(0));
+    map.put(QUARTER.toString(), quarter(0));
+    map.put(DIME.toString(), dime(0));
+    map.put(NICKEL.toString(), nickel(0));
   }
 
   @Override

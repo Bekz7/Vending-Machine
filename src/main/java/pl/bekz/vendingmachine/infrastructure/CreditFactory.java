@@ -8,19 +8,19 @@ public class CreditFactory {
 
   private CreditFactory() {}
 
-  public static Credit dollar() {
-    return new Credit(DOLLAR.toString(), DOLLAR.getValue(), 0);
+  public static Credit dollar(Integer amount) {
+    return new Credit(DOLLAR.toString(), DOLLAR.getValue(), amount);
   }
 
-  public static Credit quarter() {
-    return new Credit(QUARTER.toString(), QUARTER.getValue(), 0);
+  public static Credit quarter(Integer amount) {
+    return new Credit(QUARTER.toString(), QUARTER.getValue(), amount);
   }
 
-  public static Credit dime() {
-    return new Credit(DIME.toString(), DIME.getValue(), 0);
+  public static Credit dime(Integer amount) {
+    return new Credit(DIME.toString(), DIME.getValue(), amount);
   }
 
-  public static Credit nickel() {
-    return new Credit(NICKEL.toString(), NICKEL.getValue(), 0);
+  public static Credit nickel(Integer amount) {
+    return new Credit(NICKEL.toString(), NICKEL.getValue(), amount);
   }
 }

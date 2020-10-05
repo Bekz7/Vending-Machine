@@ -8,11 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.bekz.vendingmachine.machine.dto.ProductDto;
 import pl.bekz.vendingmachine.infrastructure.services.CustomerService;
+import pl.bekz.vendingmachine.machine.dto.ProductDto;
+
+import java.math.BigDecimal;
 
 import static java.util.Objects.requireNonNull;
-import java.math.BigDecimal;
 
 @RestController
 public class CustomerController {

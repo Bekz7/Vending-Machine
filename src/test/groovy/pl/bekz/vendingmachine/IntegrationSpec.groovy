@@ -19,6 +19,7 @@ import spock.lang.Specification
 @Transactional
 @Rollback
 abstract class IntegrationSpec extends Specification {
+
     @Autowired
     protected WebApplicationContext applicationContext
 

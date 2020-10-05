@@ -1,21 +1,16 @@
 package pl.bekz.vendingmachine.infrastructure
 
 import groovy.transform.CompileStatic
-import pl.bekz.vendingmachine.machine.domain.Money
+import pl.bekz.vendingmachine.machine.domain.entities.Credit
 import pl.bekz.vendingmachine.machine.dto.CreditDto
+
+import static pl.bekz.vendingmachine.infrastructure.CreditFactory.*
 
 @CompileStatic
 trait SampleCoins {
 
-//TODO Maybe worth to think of using the CreditFactory against createCoin
-    CreditDto dollarSamples = createCoin(Money.DOLLAR, 2)
-    CreditDto dimeSamples = createCoin(Money.DIME, 4)
-
-    private static CreditDto createCoin(Money money, int amount) {
-        return CreditDto.builder()
-                .name(money.name())
-                .amount(amount)
-                .value(money.value)
-                .build()
-    }
+    CreditDto dollarSamples = dollar(1).creditsDto()
+    CreditDto dimeSamples = quarter(1).creditsDto()
+    CreditDto quarterSample = dime(1).creditsDto()
+    CreditDto nickerSample = nickel(1).creditsDto()
 }

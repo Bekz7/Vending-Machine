@@ -2,6 +2,7 @@ package pl.bekz.vendingmachine.infrastructure.services;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.bekz.vendingmachine.infrastructure.exceptions.*;
 import pl.bekz.vendingmachine.machine.domain.Money;
