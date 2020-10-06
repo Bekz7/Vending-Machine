@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CreditFacade implements VendingMachineFacade<CreditDto> {
-  private CreditCreator creditCreator;
-  private CreditsRepository creditsRepository;
+  private final CreditCreator creditCreator;
+  private final CreditsRepository creditsRepository;
   private Transaction transaction;
 
   public CreditFacade(
-      CreditCreator creditCreator, CreditsRepository creditsRepository, Transaction transaction) {
+          CreditCreator creditCreator, CreditsRepository creditsRepository, Transaction transaction) {
     this.creditCreator = creditCreator;
     this.creditsRepository = creditsRepository;
     this.transaction = transaction;
@@ -45,9 +45,12 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
     Credit credit = creditsRepository.findOneOrThrow(name);
     final int amountToChange = credit.creditsDto().getAmount() + amount;
     final BigDecimal coinValue = credit.creditsDto().getValue();
-    credit =
-        Credit.builder().name(name).amount(amountToChange).value(coinValue).build();
-    return credit.creditsDto();
+
+    return Credit.builder()
+            .name(name)
+            .amount(amountToChange)
+            .value(coinValue)
+            .build().creditsDto();
   }
 
   public void decreesMachineBalance() {

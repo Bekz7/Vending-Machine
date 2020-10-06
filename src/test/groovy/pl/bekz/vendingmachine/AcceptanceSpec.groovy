@@ -76,11 +76,11 @@ class AcceptanceSpec extends IntegrationSpec implements SampleProducts, SampleCo
                   .andExpect(content().string("0"))
     }
 
-    def "Vendor " (){
-        when:
+    def "Operation of the machine by the vendor" (){
+        when: 'I want to refill the products'
             ResultActions refillProduct = mockMvc.perform(put("/vendor/refill/{productName}", redbulSamples.name))
             def redbull = productFacade.show(redbulSamples.name)
-        then:
+        then: 'I expect +1 amount of the refilled product'
             refillProduct.andExpect(status().isAccepted())
                          .andExpect(content().json("""
                             {
@@ -89,13 +89,16 @@ class AcceptanceSpec extends IntegrationSpec implements SampleProducts, SampleCo
                                 "price": $redbull.price
                             }
                          """))
-        when:
-            ResultActions machineBalance = mockMvc.perform(get("/vendor/balance"))
+        when: 'I want to check machine balance'
             addCredits(nickerSample)
-        then:
+            ResultActions machineBalance = mockMvc.perform(get("/vendor/balance"))
+        then: 'I should see the actual balance'
             machineBalance.andExpect(status().isOk())
                           .andExpect(content().string(nickerSample.value.toString()))
-
+        when: 'I want to payout the whole machine cash'
+            ResultActions payout = mockMvc.perform(get("/vendor/payout"))
+        then: 'I should receive all of the machine money'
+            payout.andExpect(status().isOk())
+                  .andExpect(content().string(nickerSample.value.toString()))
     }
-
 }

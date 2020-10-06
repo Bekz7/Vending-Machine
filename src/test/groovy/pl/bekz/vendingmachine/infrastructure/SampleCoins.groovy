@@ -1,7 +1,6 @@
 package pl.bekz.vendingmachine.infrastructure
 
 import groovy.transform.CompileStatic
-import pl.bekz.vendingmachine.machine.domain.entities.Credit
 import pl.bekz.vendingmachine.machine.dto.CreditDto
 
 import static pl.bekz.vendingmachine.infrastructure.CreditFactory.*

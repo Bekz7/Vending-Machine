@@ -1,5 +1,6 @@
 package pl.bekz.vendingmachine.machine.facades;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import pl.bekz.vendingmachine.infrastructure.exceptions.ProductSoldOut;
@@ -12,9 +13,10 @@ import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
 
+@Slf4j
 public class ProductFacade implements VendingMachineFacade<ProductDto> {
-    private ProductCreator productCreator;
-    private ProductRepository productRepository;
+    private final ProductCreator productCreator;
+    private final ProductRepository productRepository;
 
     public ProductFacade(
             ProductCreator productCreator,
@@ -29,6 +31,9 @@ public class ProductFacade implements VendingMachineFacade<ProductDto> {
         requireNonNull(productDto);
         Product product = productCreator.from(productDto);
         product = productRepository.save(product);
+
+        log.debug("Adding product {}", productDto.toString());
+
         return product.productDto();
     }
 
@@ -44,13 +49,12 @@ public class ProductFacade implements VendingMachineFacade<ProductDto> {
         requireNonNull(name);
         Product product = productRepository.findOneOrThrow(name);
         final int amountToChange = product.productDto().getAmount() + amount;
-        product =
-                Product.builder()
-                        .name(name)
-                        .price(product.productDto().getPrice())
-                        .amount(amountToChange)
-                        .build();
-        return product.productDto();
+
+        return Product.builder()
+                .name(name)
+                .price(product.productDto().getPrice())
+                .amount(amountToChange)
+                .build().productDto();
     }
 
     public Page<ProductDto> findAllProducts(Pageable pageable) {
