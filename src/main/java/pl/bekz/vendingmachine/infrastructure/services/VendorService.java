@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 
 @Service
 public class VendorService {
-  private CreditFacade creditFacade;
-  private ProductFacade productFacade;
+  private final CreditFacade creditFacade;
+  private final ProductFacade productFacade;
 
   public VendorService(CreditFacade creditFacade, ProductFacade productFacade) {
     this.creditFacade = creditFacade;

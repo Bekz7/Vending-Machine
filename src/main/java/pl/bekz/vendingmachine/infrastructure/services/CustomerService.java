@@ -1,5 +1,6 @@
 package pl.bekz.vendingmachine.infrastructure.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import pl.bekz.vendingmachine.machine.facades.ProductFacade;
 
 import java.math.BigDecimal;
 
+@Slf4j
 @Service
 public class CustomerService {
 
@@ -29,6 +31,11 @@ public class CustomerService {
       Money coin = Money.valueOf(coinName.toUpperCase());
       creditFacade.add(increaseCoinAmount(coin.name()));
       creditFacade.increaseCustomerBalance(coin);
+
+      log.debug("Insert the coin with customer balance: {} , and machine balance: {}",
+              creditFacade.checkCustomerBalance(),
+              creditFacade.checkMachineCoinBalance());
+
     } catch (IllegalArgumentException e) {
       throw new CreditNotFound(coinName);
     }
@@ -42,12 +49,20 @@ public class CustomerService {
     productName = productName.toUpperCase();
     final BigDecimal selectedProductPrice = productPrice(productName);
 
+    logTransactionInfo(productName, "before");
+
     conditionToSold(productName);
 
     decreaseProductAmount(productName);
     creditFacade.decreesCustomerBalance(selectedProductPrice);
     creditFacade.decreesMachineBalance();
+
+    logTransactionInfo(productName, "after");
+
     reimburseMoneyToTheCustomer();
+
+    log.debug("Customer balance after transaction {}", customerBalance());
+
     return true;
   }
 
@@ -85,5 +100,13 @@ public class CustomerService {
 
   private void decreaseProductAmount(String productId) {
     productFacade.changeAmount(productId, -1);
+  }
+
+  private void logTransactionInfo(String productName, String transactionTime) {
+    log.debug(transactionTime + "buying the product customer balance: {} , and machine balance: {}",
+            creditFacade.checkCustomerBalance(),
+            creditFacade.checkMachineCoinBalance());
+
+    log.debug("Product amount " + transactionTime +" buying: {}", productFacade.show(productName).getAmount());
   }
 }

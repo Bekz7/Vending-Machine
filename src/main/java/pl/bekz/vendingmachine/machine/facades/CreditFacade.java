@@ -1,5 +1,6 @@
 package pl.bekz.vendingmachine.machine.facades;
 
+import lombok.extern.slf4j.Slf4j;
 import pl.bekz.vendingmachine.infrastructure.exceptions.ExactChangeOnly;
 import pl.bekz.vendingmachine.infrastructure.exceptions.NotEnoughCoins;
 import pl.bekz.vendingmachine.infrastructure.repositories.CreditsRepository;
@@ -15,6 +16,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 public class CreditFacade implements VendingMachineFacade<CreditDto> {
   private final CreditCreator creditCreator;
   private final CreditsRepository creditsRepository;
@@ -31,6 +33,9 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   public CreditDto add(CreditDto dto) {
     Credit credit = creditCreator.from(dto);
     creditsRepository.save(credit);
+
+    log.debug("Adding credit {}", credit.toString());
+
     return credit.creditsDto();
   }
 
@@ -54,6 +59,8 @@ public class CreditFacade implements VendingMachineFacade<CreditDto> {
   }
 
   public void decreesMachineBalance() {
+    log.error("List coins to return {} ", decreesCreditsList());
+
     decreesCreditsList().forEach(this::add);
   }
 
